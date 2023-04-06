@@ -1,0 +1,50 @@
+{
+  "name": "antelopex-ui",
+  "version": "0.0.1",
+  "description": "Frontend for AntelopeX.io",
+  "productName": "antelopex-ui",
+  "author": "john@boid.com",
+  "private": true,
+  "scripts": {
+    "dev": "quasar dev",
+    "build": "yarn tsc && quasar build",
+    "lint": "eslint --ext .js,.ts,.vue --fix ./ ",
+    "tsc": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.0.0",
+    "@volar-plugins/pug-beautify": "^1.1.0",
+    "anchor-link": "^3.5.1",
+    "anchor-link-browser-transport": "^3.5.1",
+    "axios": "^1.2.1",
+    "pinia": "^2.0.11",
+    "quasar": "^2.6.0",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0"
+  },
+  "devDependencies": {
+    "@quasar/app-vite": "^1.0.0",
+    "@types/node": "^12.20.21",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
+    "@volar/vue-language-plugin-pug": "^1.2.0",
+    "autoprefixer": "^10.4.2",
+    "eslint": "^8.10.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "pug": "^3.0.2",
+    "typescript": "^4.5.4",
+    "vite-esbuild-typescript-checker": "^1.0.0",
+    "vite-plugin-rewrite-all": "^1.0.1",
+    "vite-tsconfig-paths": "^4.0.8",
+    "vue-tsc": "^1.2.0"
+  },
+  "engines": {
+    "node": "^18",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}

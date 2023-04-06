@@ -1,0 +1,10 @@
+[build]
+  base = "."
+  publish = "dist/spa"
+  command = "yarn build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+

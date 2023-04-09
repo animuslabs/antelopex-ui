@@ -1,7 +1,7 @@
-import { Action, AnyAction, Asset, NameType } from "anchor-link"
-import { Transfer } from "./types/token.types"
-import { Notify } from "quasar"
+import { Action, AnyAction, NameType } from "anchor-link"
 import { LinkManager } from "lib/linkManager"
+import { Notify } from "quasar"
+import { Transfer } from "./types/token.types"
 
 export const makeAction = {
   transfer(data:Transfer, contract:NameType, link:LinkManager):AnyAction {

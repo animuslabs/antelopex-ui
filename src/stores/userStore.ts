@@ -1,6 +1,6 @@
-import { defineStore } from "pinia"
 import { LinkSession, NameType, PermissionLevelType } from "anchor-link"
-import { reactive, shallowReactive } from "vue"
+import { defineStore } from "pinia"
+import { reactive } from "vue"
 export class LoggedInState {
   account:null | string = null
   auth:null | PermissionLevelType = null

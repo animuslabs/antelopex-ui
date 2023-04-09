@@ -2,7 +2,7 @@
 div
   q-card.q-ma-md.q-pa-md
     .centered
-      h3.text-weight-light(style="text-transform: capitalize;") {{ name }} Account
+      h3.text-weight-light(style="text-transform: capitalize;") {{ name.toUpperCase() }} Account
     q-separator(spaced)
     q-list(v-for="account in sessions")
       q-item(clickable tag="label")
@@ -19,7 +19,7 @@ div
             div @{{ account.auth.permission }}
     q-separator(spaced)
     .centered
-      q-btn(@click="chain.login()").q-mt-xs add account
+      q-btn(@click="addAccount()").q-mt-xs add account
 </template>
 
 <script lang="ts">
@@ -47,6 +47,11 @@ export default defineComponent({
     }
   },
   methods: {
+    async addAccount() {
+      console.log("add account")
+      await this.chain.login()
+      await this.loadSessions()
+    },
     async loadSessions() {
       console.log("load sessions")
       const sessions = await this.chain.getSessions()

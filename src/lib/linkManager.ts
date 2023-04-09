@@ -1,9 +1,7 @@
-import { boot } from "quasar/wrappers"
-import { LocalStorage } from "quasar"
-import AnchorLink, { LinkChannelSession, APIClient, ChainId, LinkSession, PermissionLevel, TransactArgs, PermissionLevelType, ChainIdType } from "anchor-link"
+import AnchorLink, { APIClient, ChainId, ChainIdType, LinkSession, PermissionLevel, PermissionLevelType, TransactArgs } from "anchor-link"
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport"
-import { userStore } from "src/stores/userStore"
 import { Config } from "src/lib/config"
+import { userStore } from "src/stores/userStore"
 const client = new APIClient({ url: "https://eos.api.animus.is" })
 
 interface StoredSession {

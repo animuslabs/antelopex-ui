@@ -13,7 +13,7 @@ export interface IbcToken {
   nativeChain:ChainKey
   precision:number
   img?:string
-  tokenContract:Record<ChainKey, string>
+  tokenContract:Partial<Record<ChainKey, string>>
   foreignWraplockContract:Partial<Record<ChainKey, string>>
   nativeWraplockContract:Partial<Record<ChainKey, string>>
 }

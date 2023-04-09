@@ -1,6 +1,6 @@
 // app global css in Sass form
 body
-  background-color: #f1f1f1
+  background: radial-gradient(circle, rgba(255,138,220,1) 22%, rgba(0,247,255,1) 100%)
 p
   font-size: 15px
   margin-bottom: 0px
@@ -11,7 +11,7 @@ h1
 h2
   font-size: 30px
   margin: 0px
-  font-family: BwNista-Regular
+  font-family: BwNista-Light
 h3
   font-size: 25px
   margin: 0px
@@ -44,8 +44,10 @@ h6
 .outlined
   outline: 1.4px solid rgba(0, 0, 0, 0.12)
 .q-card--bordered
-  outline: 2px solid $grey-5
-  border: 0px
+  outline: 2px solid $pink-2
+  // outline-style: linear-gradient(to bottom, $pink-2,rgba(0, 0, 0, 0)) 1 100%
+  // border-width: 3px
+  // border-style: solid
 .q-separator--horizontal
   height: 2px
   background-color: rgba(0, 0, 0, 0.12)
@@ -62,7 +64,7 @@ h6
   display: flex
   flex-wrap: wrap
 .header-art
-  background: linear-gradient(transparent,90%,#f1f1f1), url('ui/header.webp')
+  background: url('ui/header.webp')
   background-size: cover
   color: white
 .toggle

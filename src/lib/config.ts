@@ -1,6 +1,8 @@
 // type Configs = "telos" | "eos" | "wax"
-export const chainNames = ["telos", "eos", "ux"] as const
+export const chainNames = ["telos", "eos", "ux", "wax"] as const
 export type ChainKey = typeof chainNames[number]
+
+const sysContract = "antelopexsys"
 
 export type Config = {
   // contracts:Record[st],
@@ -11,8 +13,8 @@ export type Config = {
   },
   explorer:string,
   proofDb:string,
-  bridgeContract:string
-  wrapLockContractsArray:string[]
+  bridgeContract:string,
+  sysContract:string
 }
 
 export const configs:Record<ChainKey, Config> = {
@@ -28,8 +30,7 @@ export const configs:Record<ChainKey, Config> = {
     explorer: "https://explorer-test.telos.net",
     proofDb: "wss://telos.ibc.animus.is",
     bridgeContract: "ibc.prove",
-    wrapLockContractsArray: ["ibc.wl.ux", "ibc.wl.tlos"]
-
+    sysContract
   },
   eos: {
     linkData: {
@@ -40,19 +41,20 @@ export const configs:Record<ChainKey, Config> = {
     explorer: "https://bloks.io",
     proofDb: "wss://eos.ibc.animus.is",
     bridgeContract: "ibc.prove",
-    wrapLockContractsArray: ["ibc.wl.ux", "ibc.wl.tlos"]
+    sysContract
+
   },
-  // wax: {
-  //   linkData: {
-  //     chainId: "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4",
-  //     nodeUrl: "https://wax.greymass.com",
-  //     appName: "AntelopeX.io-wax"
-  //   },
-  //   explorer: "https://wax.bloks.io",
-  //   proofDb: "wss://wax.ibc.animus.is",
-  //   bridgeContract: "ibc.prove",
-  //   wrapLockContractsArray: ["ibc.wl.ux", "ibc.wl.tlos"]
-  // },
+  wax: {
+    linkData: {
+      chainId: "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4",
+      nodeUrl: "https://wax.greymass.com",
+      appName: "AntelopeX.io-wax"
+    },
+    explorer: "https://wax.bloks.io",
+    proofDb: "wss://wax.ibc.animus.is",
+    bridgeContract: "ibc.prove",
+    sysContract
+  },
   ux: {
     linkData: {
       chainId: "8fc6dce7942189f842170de953932b1f66693ad3788f766e777b6f9d22335c02",
@@ -62,6 +64,6 @@ export const configs:Record<ChainKey, Config> = {
     explorer: "https://explorer.uxnetwork.io/tx",
     proofDb: "wss://ibc-server.uxnetwork.io/ux",
     bridgeContract: "ibc.prove",
-    wrapLockContractsArray: ["ibc.wl.eos", "ibc.wl.tlos"]
+    sysContract
   }
 }

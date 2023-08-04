@@ -199,7 +199,7 @@ export default defineComponent({
         if (this.ibcStore.tknBridge.quantity) {
           let temp = this.ibcStore.tknBridge.quantity
           this.ibcStore.tknBridge.quantity = null
-          this.$nextTick(() => {
+          void this.$nextTick(() => {
             this.ibcStore.tknBridge.quantity = temp
           })
         }
@@ -290,7 +290,7 @@ export default defineComponent({
           const tokenContract = token.tokenContract[bridge.fromChain]
           if (!tokenContract) throw new Error("No token contract on this chain found")
           const act = makeAction.transfer(transfer, tokenContract, this.fromLink)
-          doActions([feeAct, act], this.fromLink)
+          await doActions([feeAct, act], this.fromLink)
         } else {
           const remoteToken = tkn.tokenContract[bridge.fromChain]
           if (!remoteToken) throw new Error("No token contract on this chain found")
@@ -302,14 +302,14 @@ export default defineComponent({
           console.log("retireData:", JSON.stringify(retireData, null, 2))
           const retireAct = makeAction.retire(retireData, remoteToken, this.fromLink)
           console.log("retireAct:", JSON.stringify(retireAct, null, 2))
-          doActions([feeAct, retireAct], this.fromLink)
+          await doActions([feeAct, retireAct], this.fromLink)
         }
       })
     },
     loadBal() {
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return
-      this.tknStore.loadBalance(acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken)
+      void this.tknStore.loadBalance(acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken)
     }
   },
   watch: {
@@ -330,7 +330,7 @@ export default defineComponent({
         // if (val === this.ibcStore.tknBridge.toChain) this.ibcStore.tknBridge.fromChain = oldVal
         await this.fromLink.try_restore_session()
         this.loadBal()
-        if (!this.ibcStore.sysConfig[val]) this.ibcStore.loadSysConfig(val)
+        if (!this.ibcStore.sysConfig[val]) await this.ibcStore.loadSysConfig(val)
       },
       immediate: true
     },

@@ -51,7 +51,7 @@ export class LinkManager {
       const { session } = identity
       this.session = session
       this.setApi(this.session.client)
-      this.try_restore_session()
+      await this.try_restore_session()
       console.log(session.auth)
     }
   }
@@ -78,7 +78,7 @@ export class LinkManager {
     console.log(this.session.chainId.equals(chainId))
     if (this.session.auth.equals(permissionlevel) && this.session.chainId.equals(chainId)) {
       console.log("current session")
-      this.logout()
+      await this.logout()
     } else {
       await this.link.removeSession(this.appName, permissionlevel, chainId)
     }

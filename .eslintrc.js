@@ -39,6 +39,7 @@ module.exports = {
 
   // add your custom rules here
   rules: {
+    "no-multiple-empty-lines": "off",
     "@typescript-eslint/no-floating-promises": ["error"],
     "promise/param-names": "off",
     "generator-star-spacing": "off",

@@ -52,7 +52,7 @@ export default defineComponent({
       const acct = this.sessions.filter(el => el.auth.toString() === account)?.[0]?.auth as PermissionLevel
       if (!chainId || !acct) return
       await this.chain.deleteSession(acct, chainId)
-      this.loadSessions()
+      await this.loadSessions()
     },
     async addAccount() {
       console.log("add account")
@@ -62,7 +62,7 @@ export default defineComponent({
     async loadSessions() {
       console.log("load sessions")
       this.sessions = []
-      this.$nextTick(async() => {
+      void this.$nextTick(async() => {
         const sessions = await this.chain.getSessions()
         this.sessions = sessions
         console.log("force update")
@@ -70,12 +70,12 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.loadSessions()
+    await this.loadSessions()
   },
   watch: {
     chain: {
       handler: function(val:any) {
-        this.loadSessions()
+        void this.loadSessions()
       },
       deep: false,
       immediate: false
@@ -101,7 +101,7 @@ export default defineComponent({
       console.log("selected:", val)
       const chainId = this.chain.link.chains[0]?.chainId
       if (!chainId) return
-      this.chain.restore_session(PermissionLevel.from(val), chainId)
+      void this.chain.restore_session(PermissionLevel.from(val), chainId)
     }
   }
 })

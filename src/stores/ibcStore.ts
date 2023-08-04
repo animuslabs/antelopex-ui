@@ -21,6 +21,12 @@ export class IbcState {
   sysConfig:Partial<Record<ChainKey, Raw<Config>>> = {}
 }
 
+export function chainString(chainName:ChainKey) {
+  if (chainName === "ux") return "UX Network"
+  else if (chainName === "eos") return "EOS"
+  return chainName.charAt(0).toUpperCase() + chainName.slice(1)
+}
+
 export const ibcStore = defineStore({
   id: "ibcStore",
   state: ():UnwrapNestedRefs<IbcState> =>
@@ -33,7 +39,7 @@ export const ibcStore = defineStore({
       return getSymbolList(this.tknBridge.fromChain, this.tknBridge.toChain)
     },
     sendingAsset():Asset {
-      return Asset.from(this.tknBridge.quantity || 0, `${ibcTokens[this.tknBridge.selectedToken].precision},${this.tknBridge.selectedToken}`)
+      return markRaw(Asset.from(this.tknBridge.quantity || 0, `${ibcTokens[this.tknBridge.selectedToken].precision},${this.tknBridge.selectedToken}`))
     }
   },
   actions: {

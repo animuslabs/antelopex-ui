@@ -1,25 +1,24 @@
 <template lang="pug">
-div
-  q-card.q-ma-md.q-pa-md
-    .centered
-      h3.text-weight-light(style="text-transform: capitalize;") {{ name.toUpperCase() }} Account
-    q-separator(spaced)
-    q-list(v-for="account in sessions")
-      q-item(clickable tag="label")
-        //- div {{ selected }}
-        .row.items-center
-          .col-auto
-            q-radio(v-model="selected" :val="account.auth.toString()")
-          .col-auto
-            q-avatar
-                q-icon(name="account_circle")
-          .col-auto
-            div {{ account.auth.actor }}
-          .col-auto
-            div @{{ account.auth.permission }}
-    q-separator(spaced)
-    .centered
-      q-btn(@click="addAccount()").q-mt-xs add account
+div(v-if="!hide" style="width:380px; max-width:80vw")
+  q-list(v-for="account in sessions" :key="account.auth.toString()")
+    q-item(clickable tag="label")
+      //- div {{ selected }}
+      .row.items-center.full-width
+        .col-auto
+          q-radio(v-model="selected" :val="account.auth.toString()")
+        .col-auto
+          q-avatar
+              q-icon(name="account_circle")
+        .col-auto
+          div {{ account.auth.actor }}
+        .col-auto
+          div @{{ account.auth.permission }}
+        .col-grow
+        .col-auto.q-ml-md.self-end
+          q-avatar
+            q-btn(icon="delete" flat color="grey-3" size="sm" @click="removeAccount(account.auth.toString())").bg-transparent
+  .centered
+    q-btn(@click="addAccount()" icon="add" :label="'add '+name +' account'").q-mt-xs.full-width
 </template>
 
 <script lang="ts">
@@ -43,10 +42,18 @@ export default defineComponent({
     return {
       userStore: userStore(),
       selected: "" as string|null,
-      sessions: [] as SessionData[]
+      sessions: [] as SessionData[],
+      hide: false
     }
   },
   methods: {
+    async removeAccount(account:string) {
+      const chainId = this.chain.link.chains[0]?.chainId
+      const acct = this.sessions.filter(el => el.auth.toString() === account)?.[0]?.auth as PermissionLevel
+      if (!chainId || !acct) return
+      await this.chain.deleteSession(acct, chainId)
+      this.loadSessions()
+    },
     async addAccount() {
       console.log("add account")
       await this.chain.login()
@@ -54,10 +61,12 @@ export default defineComponent({
     },
     async loadSessions() {
       console.log("load sessions")
-      const sessions = await this.chain.getSessions()
-      this.sessions = sessions
-      const loggedIn = this.chain.loggedInAccount()
-      if (!loggedIn) return
+      this.sessions = []
+      this.$nextTick(async() => {
+        const sessions = await this.chain.getSessions()
+        this.sessions = sessions
+        console.log("force update")
+      })
     }
   },
   async mounted() {

@@ -1,8 +1,25 @@
 import { IbcSymbols, IbcToken } from "lib/types/ibc.types"
 
-export const ibcSymbols = ["EOS", "TLOS", "WAX", "UX", "UTXRAM"] as const
+export const ibcSymbols = ["EOS", "TLOS", "WAX", "UX", "UTXRAM", "BOID"] as const
 
 export const ibcTokens:Record<IbcSymbols, IbcToken> = {
+  BOID: {
+    nativeChain: "eos",
+    precision: 4,
+    tokenContract: {
+      eos: "boidcomtoken",
+      telos: "wt.boid",
+      wax: "wt.boid"
+    },
+    foreignWraplockContract: {
+      telos: "df",
+      wax: "df"
+    },
+    nativeWraplockContract: {
+      telos: "wl.tlos.boid",
+      wax: "wl.wax.boid"
+    }
+  },
   EOS: {
     nativeChain: "eos",
     precision: 4,
@@ -27,7 +44,7 @@ export const ibcTokens:Record<IbcSymbols, IbcToken> = {
     nativeChain: "telos",
     precision: 4,
     tokenContract: {
-      eos: "ibc.wt.telos",
+      eos: "ibc.wt.tlos",
       telos: "eosio.token",
       ux: "ibc.wt.tlos",
       wax: "ibc.wt.tlos"

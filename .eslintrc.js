@@ -1,7 +1,8 @@
 module.exports = {
   root: true,
+
   parserOptions: {
-    parser: require.resolve("@typescript-eslint/parser"),
+    parser: "@typescript-eslint/parser",
     extraFileExtensions: [".vue", ".json", ".ts", ".js"],
     warnOnUnsupportedTypeScriptVersion: false
   },
@@ -37,6 +38,7 @@ module.exports = {
 
   // add your custom rules here
   rules: {
+    "@typescript-eslint/no-floating-promises": ["error"],
     "promise/param-names": "off",
     "generator-star-spacing": "off",
     "arrow-parens": "off",

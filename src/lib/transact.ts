@@ -1,13 +1,19 @@
-import { Action, AnyAction, NameType } from "anchor-link"
+import { Action, AnyAction, AssetType, NameType } from "anchor-link"
 import { LinkManager } from "lib/linkManager"
 import { Notify } from "quasar"
 import { Transfer } from "./types/token.types"
+import { Retire } from "lib/types/wraptoken.types"
 
 export const makeAction = {
-  transfer(data:Transfer, contract:NameType, link:LinkManager):AnyAction {
+  transfer(data:{from:NameType, to:NameType, quantity:AssetType, memo:string}, contract:NameType, link:LinkManager):AnyAction {
     const authorization = link.session?.auth
     if (!authorization) throw (new Error("auth missing"))
-    return Action.from({ name: "transfer", account: contract, data, authorization: [authorization] })
+    return Action.from({ name: "transfer", account: contract, data: Transfer.from(data), authorization: [authorization] })
+  },
+  retire(data:{owner:NameType, beneficiary:NameType, quantity:AssetType}, contract:NameType, link:LinkManager):AnyAction {
+    const authorization = link.session?.auth
+    if (!authorization) throw (new Error("auth missing"))
+    return Action.from({ name: "retire", account: contract, data: Retire.from(data), authorization: [authorization] })
   }
 }
 

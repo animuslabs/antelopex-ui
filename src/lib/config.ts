@@ -27,7 +27,7 @@ export const configs:Record<ChainKey, Config> = {
       // nodeUrl: "https://testnet.telos.caleos.io",mn
       appName: "AntelopeX.io-telos"
     },
-    explorer: "https://explorer-test.telos.net",
+    explorer: "https://explorer.telos.net",
     proofDb: "wss://telos.ibc.animus.is",
     bridgeContract: "ibc.prove",
     sysContract

@@ -24,7 +24,7 @@ export default boot(({ app }) => {
   console.log("component defaults")
   setDefault(QCard, "square", false)
   setDefault(QCard, "flat", true)
-  setDefault(QCard, "bordered", true)
+  // setDefault(QCard, "bordered", true)
 
   // setDefault(QInput, "dense", true)
   // setDefault(QInput, "outlined", true)
@@ -33,9 +33,10 @@ export default boot(({ app }) => {
   setDefault(QInput, "square", true)
 
   // setDefault(QBtn, "flat", false)
-  // setDefault(QBtn, "unelevated", true)
+  setDefault(QBtn, "unelevated", true)
   // setDefault(QBtn, "stretch", true)
   setDefault(QBtn, "ripple", false)
+
 
   setDefault(QRouteTab, "ripple", false)
 })

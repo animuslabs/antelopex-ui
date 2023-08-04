@@ -4,7 +4,8 @@ module.exports = {
   parserOptions: {
     parser: "@typescript-eslint/parser",
     extraFileExtensions: [".vue", ".json", ".ts", ".js"],
-    warnOnUnsupportedTypeScriptVersion: false
+    warnOnUnsupportedTypeScriptVersion: false,
+    project: "./tsconfig.json"
   },
   env: {
     browser: true,

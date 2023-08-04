@@ -1,8 +1,7 @@
-import AnchorLink, { APIClient, ChainId, ChainIdType, LinkSession, PermissionLevel, PermissionLevelType, TransactArgs } from "anchor-link"
+import AnchorLink, { APIClient, ChainAPI, ChainId, ChainIdType, LinkSession, PermissionLevel, PermissionLevelType, TransactArgs } from "anchor-link"
 import AnchorLinkBrowserTransport from "anchor-link-browser-transport"
 import { Config } from "src/lib/config"
 import { userStore } from "src/stores/userStore"
-const client = new APIClient({ url: "https://eos.api.animus.is" })
 
 interface StoredSession {
   auth:{actor:string, permission:string},
@@ -17,7 +16,7 @@ export class LinkManager {
   session:LinkSession | null = null
   transport:AnchorLinkBrowserTransport
   client!:APIClient
-  rpc!:typeof client.v1.chain
+  rpc!:ChainAPI
   link:AnchorLink
 
   constructor(config:Config) {
@@ -25,7 +24,7 @@ export class LinkManager {
     this.store = userStore
     this.appName = config.linkData.appName
     this.setApi(new APIClient({ url: this.config.linkData.nodeUrl }))
-    this.rpc = client.v1.chain
+    this.rpc = this.client.v1.chain
     this.transport = new AnchorLinkBrowserTransport({ storagePrefix: "anchor-" + this.appName, fuelReferrer: "boid" })
     this.link = new AnchorLink({
       transport: this.transport,
@@ -36,7 +35,7 @@ export class LinkManager {
 
   setApi(client:APIClient) {
     this.client = client
-    this.rpc = client.v1.chain
+    this.rpc = this.client.v1.chain
   }
 
   async transact(args:TransactArgs) {

@@ -105,11 +105,14 @@ q-page(padding)
             template(v-slot:hint)
               p.text-white {{ toAccountMessage }}
 
+      //- .centered.q-mb-md.text-white.q-mt-lg
+      //-   h5 Relay Fee: {{ relayFee.toString() }}
       .centered.q-mb-md.text-white.q-mt-lg
-        h5 Relay Fee: {{ relayFee.toString() }}
+        h5 Service is not yet available
       div(style="height:30px;")
       .centered(style=" bottom:-25px;").absolute-bottom
-        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive.z-top
+        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
+        //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive.z-top
 </template>
 
 <script lang="ts">
@@ -317,13 +320,13 @@ export default defineComponent({
       handler(val) {
         this.loadBal()
       },
-      immediate: true
+      immediate: false
     },
     "userStore.getLoggedIn": {
       handler(val) {
         this.loadBal()
       },
-      immediate: true
+      immediate: false
     },
     "ibcStore.tknBridge.fromChain": {
       async handler(val:ChainKey, oldVal) {

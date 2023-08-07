@@ -109,12 +109,12 @@ q-page(padding)
 
       .centered.q-mb-md.text-white.q-mt-lg
         h5 Relay Fee: {{ relayFee.toString() }}
-      //- .centered.q-mb-md.text-white.q-mt-lg
-      //-   h5 Service is not yet available
+      .centered.q-mb-md.text-white.q-mt-lg
+        h5 Service is not yet available
       div(style="height:30px;")
       .centered(style=" bottom:-25px;").absolute-bottom
-        //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
-        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
+        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
+        //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
     div(style="height:50px;").full-width
 </template>
 

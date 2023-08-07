@@ -39,6 +39,8 @@ module.exports = {
 
   // add your custom rules here
   rules: {
+    "@typescript-eslint/no-namespace": "off",
+    "vue/max-attributes-per-line": "off",
     "no-multiple-empty-lines": "off",
     "@typescript-eslint/no-floating-promises": ["error"],
     "promise/param-names": "off",

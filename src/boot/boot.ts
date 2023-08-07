@@ -18,8 +18,8 @@ export const api = axios.create({ baseURL: "https://api.example.com" })
 export const chainLinks:Record<ChainKey, LinkManager> = {
   telos: new LinkManager(configs.telos),
   eos: new LinkManager(configs.eos),
-  wax: new LinkManager(configs.wax),
-  ux: new LinkManager(configs.ux)
+  wax: new LinkManager(configs.wax)
+  // ux: new LinkManager(configs.ux)
 }
 
 export default boot(({ app }) => {

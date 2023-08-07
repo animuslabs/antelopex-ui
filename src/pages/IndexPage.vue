@@ -13,7 +13,7 @@ q-page(padding)
           q-list(separator padding)
             q-item( v-for="chain of chainButtons" clickable v-close-popup @click="selectFromChain(chain.value)").q-ma-sm
               q-item-section
-                q-item-label(style="font-size: 30px;").text-capitalize {{ chain.label }}
+                q-item-label(style="font-size: 20px;").text-capitalize {{ chain.label }}
     q-item.centered
       .col-auto.lt-sm
         h5.text-weight-light.text-white Destination Chain
@@ -21,7 +21,7 @@ q-page(padding)
           q-list(separator padding)
             q-item( v-for="chain of chainButtons" clickable v-close-popup @click="selectToChain(chain.value)").q-ma-sm
               q-item-section
-                q-item-label(style="font-size: 30px;").text-capitalize {{ chain.label }}
+                q-item-label(style="font-size: 20px;").text-capitalize {{ chain.label }}
   .gt-xs
     .centered
       .centered.bridge-box
@@ -33,7 +33,7 @@ q-page(padding)
                 q-list(separator padding)
                   q-item( v-for="chain of chainButtons" clickable v-close-popup @click="selectFromChain(chain.value)").q-ma-sm
                     q-item-section
-                      q-item-label(style="font-size: 30px;").text-capitalize {{ chain.label }}
+                      q-item-label(style="font-size: 25px;").text-capitalize {{ chain.label }}
         .col(style="width:200px; max-width:20vw;").relative-position
           .absolute-center
             img(src="/arrow.svg" style="width:130px; ")
@@ -45,7 +45,7 @@ q-page(padding)
                 q-list(separator padding)
                   q-item( v-for="chain of chainButtons" clickable v-close-popup @click="selectToChain(chain.value)").q-ma-sm
                     q-item-section
-                      q-item-label(style="font-size: 30px;").text-capitalize {{ chain.label }}
+                      q-item-label(style="font-size: 25px;").text-capitalize {{ chain.label }}
   .centered(v-if="chainSelectError").q-pa-md
     .col-auto.warn-box.q-ma-md.q-pa-md
       .centered
@@ -64,8 +64,8 @@ q-page(padding)
         .col-auto
           auth-card(:chain="fromLink" :name="ibcStore.tknBridge.fromChain").q-pa-sm
       .centered.q-ma-md.no-wrap
-        .centered.no-wrap(style="width:380px; max-width:80vw")
-          .col-auto
+        .centered.no-wrap(style="width:380px; max-width:80vw").q-pb-lg
+          .col-auto.relative-position
             h6.text-white Quantity
               q-input(
               dark
@@ -78,7 +78,7 @@ q-page(padding)
               inputStyle="font-size: 25px;"
               style="max-width:235px;"
             )
-            small.text-white {{`${user} balance: ${tknBal}`}}
+            p.text-white.q-mt-xs.absolute-bottom(style="width:300px; bottom:-25px;") {{`${user} balance:`}} #[a.text-grey-2(@click="setMaxQuantity()" href="#") {{ tknBal }}]
           .col-auto
             q-btn-dropdown(noCaps square :label="selectedToken" size="lg" style=" width:130px; margin-top:32px; height:56px;" align="left" split ref="selectToken" @click="showSelectToken()").cursor-pointer
               q-list(separator padding)
@@ -98,21 +98,24 @@ q-page(padding)
             debounce="500"
             :error="toAccountValid === false"
             :loading="loadingToAccount"
-            style="width:365px; max-width:80vw"
+            style="width:365px; max-width:80vw;"
+            inputStyle="font-size: 25px;"
+
           )
             template(v-slot:error)
               p.text-red {{ toAccountMessage }}
             template(v-slot:hint)
               p.text-white {{ toAccountMessage }}
 
-      //- .centered.q-mb-md.text-white.q-mt-lg
-      //-   h5 Relay Fee: {{ relayFee.toString() }}
       .centered.q-mb-md.text-white.q-mt-lg
-        h5 Service is not yet available
+        h5 Relay Fee: {{ relayFee.toString() }}
+      //- .centered.q-mb-md.text-white.q-mt-lg
+      //-   h5 Service is not yet available
       div(style="height:30px;")
       .centered(style=" bottom:-25px;").absolute-bottom
-        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
-        //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive.z-top
+        //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
+        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
+    div(style="height:50px;").full-width
 </template>
 
 <script lang="ts">
@@ -121,7 +124,8 @@ import { LinkManager } from "lib/linkManager"
 import { FilteredSymbol } from "lib/types/ibc.types"
 import { ibcStore, chainString } from "src/stores/ibcStore"
 import { defineComponent } from "vue"
-
+import ConfirmTransferModal from "components/ConfirmTransferModal.vue"
+import { ConfirmTransferModal as modal } from "lib/composableUtil"
 import { Asset } from "anchor-link"
 import { ibcTokens } from "lib/ibcTokens"
 import { doActions, makeAction } from "lib/transact"
@@ -131,7 +135,7 @@ import { chainLinks } from "src/boot/boot"
 import AuthCard from "src/components/AuthCard.vue"
 import { tknStore } from "src/stores/tokenStore"
 import { userStore } from "src/stores/userStore"
-import { QBtnDropdown } from "quasar"
+import { Dialog, QBtnDropdown } from "quasar"
 
 const chainButtons = chainNames.map(name => {
   return {
@@ -233,6 +237,9 @@ export default defineComponent({
     }
   },
   methods: {
+    async setMaxQuantity() {
+      this.ibcStore.tknBridge.quantity = parseFloat(this.tknBal.toString())
+    },
     async selectToken(sym:FilteredSymbol) {
       this.selectedToken = sym
     },
@@ -261,51 +268,73 @@ export default defineComponent({
     async sendToken() {
       console.log("send token")
       const bridge = this.ibcStore.tknBridge
+      const componentProps:modal.Props = {
+        destinationAccountName: bridge.destinationAccount,
+        fromChainName: chainString(bridge.fromChain),
+        toChainName: chainString(bridge.toChain),
+        quantity: Asset.from(this.ibcStore.sendingAsset.toString()),
+        relayFee: this.relayFee,
+        fromAccountName: this.printLoggedIn?.split("@")[0] || ""
+      }
+      console.log("props", componentProps)
+
+
       this.$q.dialog(
-        { ok: "Send", cancel: true, message: `You are sending ${this.ibcStore.sendingAsset} to ${this.ibcStore.tknBridge.destinationAccount} on ${this.ibcStore.tknBridge.toChain} Mainnet ` }
+        {
+          component: ConfirmTransferModal,
+          componentProps
+        }
       ).onOk(async() => {
-        const sym = bridge.selectedToken
-        const toChain = bridge.toChain
-        const tkn = ibcTokens[sym]
-        const sendingFromNative = tkn.nativeChain === bridge.fromChain
-        const fee = this.ibcStore.sysConfig[bridge.fromChain]?.min_fee
-        if (!fee) throw new Error("no fee config for this chain.")
-        const payFee = Transfer.from({
-          from: this.user,
-          to: this.fromLink.config.sysContract,
-          quantity: fee.quantity,
-          memo: "ibc order payment"
-        })
-        console.log("payFee", JSON.stringify(payFee, null, 2))
-        const feeAct = makeAction.transfer(payFee, fee.contract, this.fromLink)
-
-        if (sendingFromNative) {
-          const toAcct = tkn.nativeWraplockContract[toChain]
-          if (!toAcct) throw new Error("No wraplock contract found for this token on this chain")
-          const transfer = {
+        try {
+          const sym = bridge.selectedToken
+          const toChain = bridge.toChain
+          const tkn = ibcTokens[sym]
+          const sendingFromNative = tkn.nativeChain === bridge.fromChain
+          const fee = this.ibcStore.sysConfig[bridge.fromChain]?.min_fee
+          if (!fee) throw new Error("no fee config for this chain.")
+          const payFee = Transfer.from({
             from: this.user,
-            to: toAcct,
-            quantity: this.ibcStore.sendingAsset.toString(),
-            memo: this.ibcStore.tknBridge.destinationAccount
-          }
+            to: this.fromLink.config.sysContract,
+            quantity: fee.quantity,
+            memo: "ibc order payment"
+          })
+          console.log("payFee", JSON.stringify(payFee, null, 2))
+          const feeAct = makeAction.transfer(payFee, fee.contract, this.fromLink)
 
-          const token = ibcTokens[this.ibcStore.tknBridge.selectedToken]
-          const tokenContract = token.tokenContract[bridge.fromChain]
-          if (!tokenContract) throw new Error("No token contract on this chain found")
-          const act = makeAction.transfer(transfer, tokenContract, this.fromLink)
-          await doActions([feeAct, act], this.fromLink)
-        } else {
-          const remoteToken = tkn.tokenContract[bridge.fromChain]
-          if (!remoteToken) throw new Error("No token contract on this chain found")
-          const retireData = {
-            owner: this.user,
-            beneficiary: this.ibcStore.tknBridge.destinationAccount,
-            quantity: this.ibcStore.sendingAsset.toString()
+          if (sendingFromNative) {
+            const toAcct = tkn.wraplockContracts[toChain]
+            if (!toAcct) throw new Error("No wraplock contract found for this token on this chain")
+            const transfer = {
+              from: this.user,
+              to: toAcct,
+              quantity: this.ibcStore.sendingAsset.toString(),
+              memo: this.ibcStore.tknBridge.destinationAccount
+            }
+
+            const token = ibcTokens[this.ibcStore.tknBridge.selectedToken]
+            const tokenContract = token.tokenContract[bridge.fromChain]
+            if (!tokenContract) throw new Error("No token contract on this chain found")
+            const act = makeAction.transfer(transfer, tokenContract, this.fromLink)
+            await doActions([feeAct, act], this.fromLink)
+          } else {
+            const remoteToken = tkn.tokenContract[bridge.fromChain]
+            if (!remoteToken) throw new Error("No token contract on this chain found")
+            const retireData = {
+              owner: this.user,
+              beneficiary: this.ibcStore.tknBridge.destinationAccount,
+              quantity: this.ibcStore.sendingAsset.toString()
+            }
+            console.log("retireData:", JSON.stringify(retireData, null, 2))
+            const retireAct = makeAction.retire(retireData, remoteToken, this.fromLink)
+            console.log("retireAct:", JSON.stringify(retireAct, null, 2))
+            await doActions([feeAct, retireAct], this.fromLink)
           }
-          console.log("retireData:", JSON.stringify(retireData, null, 2))
-          const retireAct = makeAction.retire(retireData, remoteToken, this.fromLink)
-          console.log("retireAct:", JSON.stringify(retireAct, null, 2))
-          await doActions([feeAct, retireAct], this.fromLink)
+          Dialog.create({
+            style: "background-color:white;",
+            message: "The IBC relay service will take 3 minutes to push your tokens to the destination chain."
+          })
+        } catch (error) {
+          console.error(error)
         }
       })
     },

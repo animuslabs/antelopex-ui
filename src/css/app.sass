@@ -2,16 +2,28 @@
 body
   background-image: url('/background.webp')
   background-color: #333477
-  background-size: cover
-  background-position: center
-  background-repeat: no-repeat
+  // background-size: cover
+  animation: slidein 10s
+  animation-fill-mode: forwards
+  animation-iteration-count: infinite
+  animation-direction: alternate
+  // background-position: center
+  // background-repeat: no-repeat
   // background: radial-gradient(circle, #ff73d5 5%, #00a2ff 100%)
   // background: linear-gradient(62deg, #8EC5FC 72%, #E0C3FC 100%)
   // background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)
-  // background-size: 100% 140%
+  background-size: 200% 140%
 
   // animation: gradient 5s ease infinite
   // height: 100vh
+
+@keyframes slidein
+  from
+    background-position: top
+    // background-size: 1000px
+  to
+    background-position: -100px 0px
+    // background-size: 1000px
 
 @keyframes gradient
   0%
@@ -132,8 +144,9 @@ body.body--dark
   border-radius: 8px
 
 .outline-box
-  border: 2px solid rgba($blue-4,.4)
+  border: 2px solid rgba($blue-4,.8)
   border-radius: 8px
+  background: linear-gradient(90deg, rgba(0,0,0,.1) 0%,rgba(0,0,0,.1) 50%,rgba(0,0,0,.1) 100% )
 
   .q-field__input
     color: $pink

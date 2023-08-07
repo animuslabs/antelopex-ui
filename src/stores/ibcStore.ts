@@ -22,8 +22,8 @@ export class IbcState {
 }
 
 export function chainString(chainName:ChainKey) {
-  if (chainName === "ux") return "UX Network"
-  else if (chainName === "eos") return "EOS"
+  // if (chainName === "ux") return "UX Network"
+  if (chainName === "eos") return "EOS"
   return chainName.charAt(0).toUpperCase() + chainName.slice(1)
 }
 

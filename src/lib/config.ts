@@ -1,5 +1,6 @@
 // type Configs = "telos" | "eos" | "wax"
-export const chainNames = ["telos", "eos", "ux", "wax"] as const
+// export const chainNames = ["telos", "eos", "ux", "wax"] as const
+export const chainNames = ["telos", "eos", "wax"] as const
 export type ChainKey = typeof chainNames[number]
 
 const sysContract = "antelopexsys"
@@ -54,16 +55,16 @@ export const configs:Record<ChainKey, Config> = {
     proofDb: "wss://wax.ibc.animus.is",
     bridgeContract: "ibc.prove",
     sysContract
-  },
-  ux: {
-    linkData: {
-      chainId: "8fc6dce7942189f842170de953932b1f66693ad3788f766e777b6f9d22335c02",
-      nodeUrl: "https://api.uxnetwork.io",
-      appName: "AntelopeX.io-ux"
-    },
-    explorer: "https://explorer.uxnetwork.io/tx",
-    proofDb: "wss://ibc-server.uxnetwork.io/ux",
-    bridgeContract: "ibc.prove",
-    sysContract
   }
+  // ux: {
+  //   linkData: {
+  //     chainId: "8fc6dce7942189f842170de953932b1f66693ad3788f766e777b6f9d22335c02",
+  //     nodeUrl: "https://api.uxnetwork.io",
+  //     appName: "AntelopeX.io-ux"
+  //   },
+  //   explorer: "https://explorer.uxnetwork.io/tx",
+  //   proofDb: "wss://ibc-server.uxnetwork.io/ux",
+  //   bridgeContract: "ibc.prove",
+  //   sysContract
+  // }
 }

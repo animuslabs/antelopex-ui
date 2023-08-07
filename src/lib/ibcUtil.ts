@@ -9,7 +9,7 @@ export function getTokenList(originChainName:ChainKey, destinationChainName:Chai
     const tkn = ibcTokens[sym]
     if (
       tkn.nativeChain == originChainName ||
-      !Object.keys(tkn.foreignWraplockContract).includes(destinationChainName)
+      !Object.keys(tkn.wraplockContracts).includes(destinationChainName)
     ) {
       tknList[sym] = tkn
     }
@@ -23,7 +23,7 @@ export function getSymbolList(originChainName:ChainKey, destinationChainName:Cha
     const tkn = ibcTokens[sym]
     if (
       tkn.nativeChain == originChainName ||
-      !Object.keys(tkn.foreignWraplockContract).includes(destinationChainName)
+      !Object.keys(tkn.wraplockContracts).includes(destinationChainName)
     ) {
       symList.push(sym)
     }

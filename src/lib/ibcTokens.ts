@@ -37,14 +37,14 @@ export const ibcTokens:Record<IbcSymbols, IbcToken> = {
     precision: 4,
     tokenContract: {
       eos: "ibc.wt.tlos",
-      telos: "eosio.token",
+      telos: "eosio.token"
       // ux: "ibc.wt.tlos",
-      wax: "ibc.wt.tlos"
+      // wax: "ibc.wt.tlos"
     },
     wraplockContracts: {
       // ux: "ibc.wl.ux",
-      eos: "ibc.wl.eos",
-      wax: "ibc.wl.wax"
+      eos: "ibc.wl.eos"
+      // wax: "ibc.wl.wax"
     }
   },
   WAX: {
@@ -52,14 +52,14 @@ export const ibcTokens:Record<IbcSymbols, IbcToken> = {
     precision: 8,
     tokenContract: {
       eos: "ibc.wt.wax",
-      telos: "ibc.wt.wax",
+      // telos: "ibc.wt.wax",
       // ux: "ibc.wt.wax",
       wax: "eosio.token"
     },
     wraplockContracts: {
       // ux: "ibc.wl.ux",
-      eos: "ibc.wl.eos",
-      telos: "ibc.wl.tlos"
+      eos: "ibc.wl.eos"
+      // telos: "ibc.wl.tlos"
     }
   }
   // UX: {

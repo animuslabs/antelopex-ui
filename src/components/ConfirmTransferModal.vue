@@ -4,7 +4,7 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
     .centered
       h3 Are you sure you want to send
     .centered
-      h2 {{ props.quantity }}
+      h2 {{ printAsset(props.quantity) }}
     .q-pa-lg.bg-blue-grey-10.relative-position
       img.q-pr-xl(src="/arrow.svg" style="width:100px; right:0px;").absolute-center.gt-xs
       .row.items-center
@@ -30,6 +30,9 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
         .col-auto(style="width:180px;").q-mt-md
           p.block To Account
           h4 {{ props.destinationAccountName }}
+    .full-width.q-ma-md
+      .centered
+        h5 IBC Relay Fee: {{printAsset(props.relayFee)}}
     .full-width(style="height:30px;")
     .centered.q-gutter-xl.absolute-bottom(style="bottom:-20px;")
       q-btn(color="positive", label="Confirm", @click="onOKClick" size="lg" rounded)
@@ -40,6 +43,7 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 import { useDialogPluginComponent } from "quasar"
 import { Asset } from "@greymass/eosio"
 import { confirmTranferModal } from "lib/composableUtil"
+import { printAsset } from "lib/utils"
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 const props = defineProps<{
   relayFee:Asset

@@ -43,6 +43,12 @@ export const ibcStore = defineStore({
     }
   },
   actions: {
+    swapChains() {
+      const from = this.tknBridge.fromChain
+      const to = this.tknBridge.toChain
+      this.tknBridge.toChain = from
+      this.tknBridge.fromChain = to
+    },
     async loadSysConfig(chainId:ChainKey) {
       const link = chainLinks[chainId]
       const code = link.config.sysContract

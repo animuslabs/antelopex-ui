@@ -1,7 +1,9 @@
+import { ChainKey } from "lib/config"
 import { IbcSymbols, IbcToken } from "lib/types/ibc.types"
 
 // export const ibcSymbols = ["EOS", "TLOS", "WAX", "UX", "UTXRAM", "BOID"] as const
 export const ibcSymbols = ["EOS", "TLOS", "WAX", "BOID"] as const
+
 
 export const ibcTokens:Record<IbcSymbols, IbcToken> = {
   BOID: {

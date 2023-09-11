@@ -37,6 +37,8 @@ q-page(padding)
         .col(style="width:200px; max-width:20vw;").relative-position
           .absolute-center
             img(src="/arrow.svg" style="width:130px; ")
+          .absolute-center
+            q-btn(flat size="lg" color="grey" style="width:200px;" @click="reverseChains").bg-transparent
         .col-auto
           .q-pa-lg
             div
@@ -58,7 +60,7 @@ q-page(padding)
 
       .centered.q-pt-sm
         .col-auto
-          h4.text-weight-light.text-white.q-pb-xs Sending From Account
+          h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Sending from {{ ibcStore.tknBridge.fromChain }} Account
           //- q-btn-dropdown( transitionDuration="0" noCaps :label="printLoggedIn || '' " size="lg" style=" width:200px; " align="left" split ref="selectAccount" @click="showSelectAccount()")
       .centered
         .col-auto
@@ -108,7 +110,7 @@ q-page(padding)
               p.text-white {{ toAccountMessage }}
 
       .centered.q-mb-md.text-white.q-mt-lg
-        h5 Relay Fee: {{ relayFee.toString() }}
+        h5 Relay Fee: {{ printAsset(relayFee) }}
       //- .centered.q-mb-md.text-white.q-mt-lg
       //-   h5 Service is not yet available
       div(style="height:30px;")
@@ -119,23 +121,23 @@ q-page(padding)
 </template>
 
 <script lang="ts">
-import { ChainKey, chainNames, configs } from "lib/config"
-import { LinkManager } from "lib/linkManager"
-import { FilteredSymbol } from "lib/types/ibc.types"
-import { ibcStore, chainString } from "src/stores/ibcStore"
-import { defineComponent } from "vue"
+import { Asset } from "anchor-link"
 import ConfirmTransferModal from "components/ConfirmTransferModal.vue"
 import { ConfirmTransferModal as modal } from "lib/composableUtil"
-import { Asset } from "anchor-link"
+import { ChainKey, chainNames, configs } from "lib/config"
 import { ibcTokens } from "lib/ibcTokens"
+import { LinkManager } from "lib/linkManager"
 import { doActions, makeAction } from "lib/transact"
+import { FilteredSymbol } from "lib/types/ibc.types"
 import { Transfer } from "lib/types/token.types"
-import { Retire } from "lib/types/wraptoken.types"
+import { Dialog, QBtnDropdown } from "quasar"
 import { chainLinks } from "src/boot/boot"
 import AuthCard from "src/components/AuthCard.vue"
+import { chainString, ibcStore } from "src/stores/ibcStore"
 import { tknStore } from "src/stores/tokenStore"
 import { userStore } from "src/stores/userStore"
-import { Dialog, QBtnDropdown } from "quasar"
+import { defineComponent } from "vue"
+import { printAsset } from "lib/utils"
 
 const chainButtons = chainNames.map(name => {
   return {
@@ -149,6 +151,7 @@ export default defineComponent({
   components: { AuthCard },
   data() {
     return {
+      printAsset,
       chainString,
       ibcStore: ibcStore(),
       tknStore: tknStore(),
@@ -237,6 +240,9 @@ export default defineComponent({
     }
   },
   methods: {
+    async reverseChains() {
+      this.ibcStore.swapChains()
+    },
     async setMaxQuantity() {
       this.ibcStore.tknBridge.quantity = parseFloat(this.tknBal.toString())
     },

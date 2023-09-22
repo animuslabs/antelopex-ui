@@ -1,7 +1,9 @@
 import { Asset, NameType } from "anchor-link"
 import { ChainKey } from "lib/config"
+import { ibcHubs } from "lib/ibcHubs"
 import { ibcTokens } from "lib/ibcTokens"
 import { FilteredSymbol } from "lib/types/ibc.types"
+import { throwErr } from "lib/utils"
 import { defineStore } from "pinia"
 import { chainLinks } from "src/boot/boot"
 import { ibcStore } from "src/stores/ibcStore"
@@ -11,18 +13,18 @@ import { Raw, UnwrapNestedRefs, markRaw, reactive } from "vue"
 type ChainBal = Partial<Record<ChainKey, number>>
 type AcctBal = Partial<Record<FilteredSymbol, ChainBal>>
 
-export const tknStore = defineStore({
+export const TknStore = defineStore({
   id: "tknStore",
-  state: ():UnwrapNestedRefs<{ bal:Record<string, AcctBal> }> =>
-    (reactive({ bal: {} })),
+  state: ():UnwrapNestedRefs<{ ibcBal:Record<string, AcctBal>, nativeBal:Record<string, AcctBal> }> =>
+    (reactive({ ibcBal: {}, nativeBal: {} })),
   getters: {
-    currentBal():Raw<Asset> {
+    bridgeTknBal():Raw<Asset> {
       const acct = userStore().getLoggedIn
       const sym = ibcStore().tknBridge.selectedToken
       const symbol = `${ibcTokens[sym].precision},${ibcStore().tknBridge.selectedToken}`
       const blank = markRaw(Asset.from(0, symbol))
       if (!acct || !acct.account) return blank
-      const acctBal = this.bal[acct.account.toString()]
+      const acctBal = this.ibcBal[acct.account.toString()]
       if (!acctBal) return blank
       const chainBal = acctBal[sym]
       console.log("chainBal", chainBal)
@@ -34,7 +36,7 @@ export const tknStore = defineStore({
     }
   },
   actions: {
-    async loadBalance(account:NameType, chain:ChainKey, symbol:FilteredSymbol) {
+    async loadIbcBal(account:NameType, chain:ChainKey, symbol:FilteredSymbol) {
       const link = chainLinks[chain]
       const token = ibcTokens[symbol]
       console.log("loadBalance", account, chain, symbol)
@@ -46,10 +48,34 @@ export const tknStore = defineStore({
       // this.bal[account.toString()]
       this.$patch(
         {
-          bal: {
+          ibcBal: {
             [account.toString()]: {
               [symbol]: {
                 [chain]: bal[0].value
+              }
+            }
+          }
+        })
+    },
+    async loadNativeBal(account:NameType, chain:ChainKey, symbol:keyof typeof ibcHubs) {
+      const link = chainLinks[chain]
+      const token = ibcTokens[symbol]
+      const nativeTkn = ibcHubs[symbol]
+      if (!nativeTkn) throwErr("Missing hub sym", symbol)
+      if (!nativeTkn.nativeToken[chain]) throwErr("Missing hub chain", chain)
+      console.log("loadNativeBalance", account, chain, symbol)
+      const tokenContract = nativeTkn.nativeToken[chain]
+      if (!tokenContract) throwErr("ERROR Missing contract", chain, token)
+      let bal = await link.rpc.get_currency_balance(tokenContract, account, symbol).catch(console.log)
+      if (!bal || !bal[0]) bal = [Asset.from(0, `${ibcTokens[symbol].precision},${symbol}`)]
+      const val = bal && bal[0] ? bal[0].value : 0
+      console.log(bal)
+      this.$patch(
+        {
+          nativeBal: {
+            [account.toString()]: {
+              [symbol]: {
+                [chain]: val
               }
             }
           }

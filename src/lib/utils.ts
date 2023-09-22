@@ -1,4 +1,6 @@
 import { Asset } from "anchor-link"
+import { chainNames } from "lib/config"
+import { chainString } from "src/stores/ibcStore"
 
 export function printAsset(asset:Asset):string {
   const assetString = asset.toString()
@@ -20,3 +22,16 @@ export function deepClone<T>(val:T) {
   val = JSON.parse(JSON.stringify(val))
   return val
 }
+
+export function throwErr(...messages:any[]):never {
+  const errorMessage = messages.join(" ")
+  throw new Error(errorMessage)
+}
+
+
+export const chainButtons = chainNames.map(name => {
+  return {
+    label: chainString(name),
+    value: name
+  }
+})

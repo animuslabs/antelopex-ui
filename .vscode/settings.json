@@ -22,5 +22,8 @@
   "[sass]": {
     "editor.defaultFormatter": "syler.sass-indented"
   },
-  "vue.features.codeActions.enable": true
+  "vue.features.codeActions.enable": true,
+  "[xml]": {
+    "editor.defaultFormatter": "DotJoshJohnson.xml"
+  }
 }

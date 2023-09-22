@@ -75,6 +75,7 @@ export default defineComponent({
   watch: {
     chain: {
       handler: function(val:any) {
+        this.selected = null
         void this.loadSessions()
       },
       deep: false,
@@ -88,7 +89,7 @@ export default defineComponent({
         if (!chainId) return
         const loggedInId = val.chainId
         if (!loggedInId) return
-        if (loggedInId !== chainId.toString()) return
+        if (loggedInId !== chainId.toString()) this.selected = null
         if (!val.auth) return
         console.log("WATCHER loggedIn:", val.auth.toString())
         this.selected = val.auth.toString()

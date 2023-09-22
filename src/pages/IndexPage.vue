@@ -53,7 +53,12 @@ q-page(padding)
       .centered
         q-icon(name="priority_high" color="amber" size="100px")
       h4.text-white Must select different Source and Destination Chains
-  .centered(v-if="!chainSelectError").no-wrap
+  .centered(v-if="chainSelectError2").q-pa-md
+    .col-auto.warn-box.q-ma-md.q-pa-md
+      .centered
+        q-icon(name="priority_high" color="amber" size="100px")
+      h4.text-white Must select different Source and Destination Chains
+  .centered(v-if="!chainSelectError && !chainSelectError2").no-wrap
     .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:600px; max-width:80vw;")
       .centered
         //- h4.text-weight-light.text-white Select and Send Token
@@ -134,7 +139,7 @@ import { Dialog, QBtnDropdown } from "quasar"
 import { chainLinks } from "src/boot/boot"
 import AuthCard from "src/components/AuthCard.vue"
 import { chainString, ibcStore } from "src/stores/ibcStore"
-import { tknStore } from "src/stores/tokenStore"
+import { TknStore } from "src/stores/tokenStore"
 import { userStore } from "src/stores/userStore"
 import { defineComponent } from "vue"
 import { printAsset } from "lib/utils"
@@ -154,7 +159,7 @@ export default defineComponent({
       printAsset,
       chainString,
       ibcStore: ibcStore(),
-      tknStore: tknStore(),
+      tknStore: TknStore(),
       userStore: userStore(),
       chainButtons,
       loadingToAccount: false,
@@ -181,6 +186,10 @@ export default defineComponent({
     chainSelectError():boolean {
       // return false if to and from chains are the same
       return this.ibcStore.tknBridge.toChain === this.ibcStore.tknBridge.fromChain
+    },
+    chainSelectError2():boolean {
+      // return false if to and from chains are telos and wax
+      return (this.ibcStore.tknBridge.toChain === "telos" && this.ibcStore.tknBridge.fromChain == "wax") || (this.ibcStore.tknBridge.toChain === "wax" && this.ibcStore.tknBridge.fromChain == "telos")
     },
     relayFee():Asset {
       const fee = this.ibcStore.sysConfig[this.ibcStore.tknBridge.fromChain]?.min_fee.quantity
@@ -219,9 +228,9 @@ export default defineComponent({
       }
     },
     tknBal():Asset {
-      console.log("tknBal:", this.tknStore.currentBal)
-      console.log("tknBal:", JSON.stringify(this.tknStore.currentBal))
-      return this.tknStore.currentBal
+      console.log("tknBal:", this.tknStore.bridgeTknBal)
+      console.log("tknBal:", JSON.stringify(this.tknStore.bridgeTknBal))
+      return this.tknStore.bridgeTknBal
     },
     fromLink():LinkManager {
       const link = chainLinks[this.ibcStore.tknBridge.fromChain]
@@ -347,7 +356,7 @@ export default defineComponent({
     loadBal() {
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return
-      void this.tknStore.loadBalance(acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken)
+      void this.tknStore.loadIbcBal(acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken)
     }
   },
   watch: {

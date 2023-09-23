@@ -142,6 +142,9 @@ import { defineComponent } from "vue"
 import { printAsset, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
 
+// type TknStoreType = InstanceType<typeof TknStore>
+// let ok:TknStoreType = {}
+
 const chainButtons = chainNames.map(name => {
   return {
     label: chainString(name),
@@ -371,7 +374,8 @@ export default defineComponent({
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return
       console.log("checkNative", this.checkNative)
-      const params:Parameters<typeof this.tknStore.loadNativeBal> = [acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken] as any
+      let tknStore = this.tknStore
+      const params:Parameters<typeof tknStore.loadNativeBal> = [acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken] as any
       if (this.checkNative) void this.tknStore.loadNativeBal(...params)
       else void this.tknStore.loadIbcBal(...params)
     }

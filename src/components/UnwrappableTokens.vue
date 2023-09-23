@@ -40,7 +40,7 @@ import { doActions, makeAction } from "lib/transact"
 import { type IbcSymbols } from "lib/types/ibc.types"
 import { throwErr } from "lib/utils"
 import { TknStore } from "src/stores/tokenStore"
-import { computed, defineProps, reactive, ref, toRefs, watchEffect } from "vue"
+import { computed, defineProps, onMounted, reactive, ref, toRefs, watchEffect } from "vue"
 
 let tknStore = TknStore()
 type UnwrapableBal = Partial<Record<ChainKey, Partial<Record<IbcSymbols, Asset>>>>
@@ -68,6 +68,10 @@ async function unwrapToken(token:UnwrappableType) {
   setTimeout(async() => await loadBalances(), 1000)
   loading.value = false
 }
+
+onMounted(async() => {
+  await loadBalances()
+})
 
 async function loadBalances() {
   await Promise.all([checkUnwrappableBalances(), loadWrappedBalances()])

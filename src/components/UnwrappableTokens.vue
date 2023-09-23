@@ -31,16 +31,16 @@ div.relative-position
 </template>
 
 <script setup lang="ts">
-import { type IbcHubType, ibcHubs, type UnwrappableType, unwrappableTokens, getChainUnwrapable } from "lib/ibcHubs"
-import { LinkManager } from "lib/linkManager"
-import { type Ref, computed, ref, watch, watchEffect, reactive, toRefs, defineProps } from "vue"
-import { type ChainKey } from "lib/config"
 import { Asset } from "anchor-link"
-import { type IbcSymbols } from "lib/types/ibc.types"
-import { TknStore } from "src/stores/tokenStore"
+import { type ChainKey } from "lib/config"
+import { getChainUnwrapable, type UnwrappableType } from "lib/ibcHubs"
 import { ibcTokens } from "lib/ibcTokens"
+import { LinkManager } from "lib/linkManager"
 import { doActions, makeAction } from "lib/transact"
+import { type IbcSymbols } from "lib/types/ibc.types"
 import { throwErr } from "lib/utils"
+import { TknStore } from "src/stores/tokenStore"
+import { computed, defineProps, reactive, ref, toRefs, watchEffect } from "vue"
 
 let tknStore = TknStore()
 type UnwrapableBal = Partial<Record<ChainKey, Partial<Record<IbcSymbols, Asset>>>>
@@ -114,9 +114,9 @@ const nativeBalances = computed(() => {
 
 
 watchEffect(async() => {
-  loading.value = true
   console.log("props triggered")
   if (!propRefs.targetAccountName.value) return
+  loading.value = true
   console.log(propRefs.chain.value.config.explorer)
   console.log("targetAccountName is now available")
   await loadBalances()

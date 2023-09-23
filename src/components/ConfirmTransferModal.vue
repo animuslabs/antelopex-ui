@@ -9,7 +9,7 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
       img.q-pr-xl(src="/arrow.svg" style="width:100px; right:0px;").absolute-center.gt-xs
       .row.items-center
         .col-auto(style="width:20px")
-        .col-auto
+        .col-auto1
           p.block From Chain
           h4 {{ props.fromChainName }}
         .col-grow
@@ -42,7 +42,6 @@ q-dialog(ref="dialogRef", @hide="onDialogHide")
 <script setup lang="ts">
 import { useDialogPluginComponent } from "quasar"
 import { Asset } from "@greymass/eosio"
-import { confirmTranferModal } from "lib/composableUtil"
 import { printAsset } from "lib/utils"
 const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } = useDialogPluginComponent()
 const props = defineProps<{

@@ -23,8 +23,10 @@ export const TknStore = defineStore({
       const sym = ibcStore().tknBridge.selectedToken
       const symbol = `${ibcTokens[sym].precision},${ibcStore().tknBridge.selectedToken}`
       const blank = markRaw(Asset.from(0, symbol))
+      const native = ibcHubs[sym]?.nativeToken[ibcStore().tknBridge.fromChain]
       if (!acct || !acct.account) return blank
-      const acctBal = this.ibcBal[acct.account.toString()]
+      console.log("getting native token?", native)
+      const acctBal = native ? this.nativeBal[acct.account.toString()] : this.ibcBal[acct.account.toString()]
       if (!acctBal) return blank
       const chainBal = acctBal[sym]
       console.log("chainBal", chainBal)

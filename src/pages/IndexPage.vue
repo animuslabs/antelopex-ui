@@ -52,17 +52,15 @@ q-page(padding)
     .col-auto.warn-box.q-ma-md.q-pa-md
       .centered
         q-icon(name="priority_high" color="amber" size="100px")
-      h4.text-white Must select different Source and Destination Chains
+      h4.text-white Must select different Source and Destination Chain
   .centered(v-if="chainSelectError2").q-pa-md
     .col-auto.warn-box.q-ma-md.q-pa-md
       .centered
         q-icon(name="priority_high" color="amber" size="100px")
-      h4.text-white Must select different Source and Destination Chains
+      h4.text-white Chain combination not supported
   .centered(v-if="!chainSelectError && !chainSelectError2").no-wrap
     .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:600px; max-width:80vw;")
       .centered
-        //- h4.text-weight-light.text-white Select and Send Token
-
       .centered.q-pt-sm
         .col-auto
           h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Sending from {{ ibcStore.tknBridge.fromChain }} Account
@@ -126,9 +124,8 @@ q-page(padding)
 </template>
 
 <script lang="ts">
-import { Asset } from "anchor-link"
+import { Asset, NameType } from "anchor-link"
 import ConfirmTransferModal from "components/ConfirmTransferModal.vue"
-import { ConfirmTransferModal as modal } from "lib/composableUtil"
 import { ChainKey, chainNames, configs } from "lib/config"
 import { ibcTokens } from "lib/ibcTokens"
 import { LinkManager } from "lib/linkManager"
@@ -142,7 +139,8 @@ import { chainString, ibcStore } from "src/stores/ibcStore"
 import { TknStore } from "src/stores/tokenStore"
 import { userStore } from "src/stores/userStore"
 import { defineComponent } from "vue"
-import { printAsset } from "lib/utils"
+import { printAsset, throwErr } from "lib/utils"
+import { ibcHubs } from "lib/ibcHubs"
 
 const chainButtons = chainNames.map(name => {
   return {
@@ -150,6 +148,7 @@ const chainButtons = chainNames.map(name => {
     value: name
   }
 })
+type modalProps = InstanceType<typeof ConfirmTransferModal>["$props"]
 
 export default defineComponent({
   name: "IndexPage",
@@ -167,8 +166,10 @@ export default defineComponent({
       toAccountMessage: ""
     }
   },
-
   computed: {
+    checkNative():boolean {
+      return !!ibcHubs[this.selectedToken]?.nativeToken[this.ibcStore.tknBridge.fromChain]
+    },
     printLoggedIn():string|null {
       let val = this.userStore.getLoggedIn
       let selected = null
@@ -283,7 +284,8 @@ export default defineComponent({
     async sendToken() {
       console.log("send token")
       const bridge = this.ibcStore.tknBridge
-      const componentProps:modal.Props = {
+
+      const componentProps:modalProps = {
         destinationAccountName: bridge.destinationAccount,
         fromChainName: chainString(bridge.fromChain),
         toChainName: chainString(bridge.toChain),
@@ -342,11 +344,23 @@ export default defineComponent({
             console.log("retireData:", JSON.stringify(retireData, null, 2))
             const retireAct = makeAction.retire(retireData, remoteToken, this.fromLink)
             console.log("retireAct:", JSON.stringify(retireAct, null, 2))
-            await doActions([feeAct, retireAct], this.fromLink)
+            let actions = [feeAct, retireAct]
+            if (this.checkNative) {
+              const nativetkn = ibcHubs[bridge.selectedToken]
+              if (!nativetkn) throwErr("No token contract on this chain found")
+              const wrapAction = makeAction.transfer({
+                from: this.user,
+                to: nativetkn.hubContract[bridge.fromChain] as string,
+                quantity: this.ibcStore.sendingAsset.toString(),
+                memo: `ibc_contract=${remoteToken}  issue_to=${this.user}`
+              }, nativetkn.nativeToken[bridge.fromChain] as string, this.fromLink)
+              actions.unshift(wrapAction)
+            }
+            await doActions(actions, this.fromLink)
           }
           Dialog.create({
             style: "background-color:white;",
-            message: "The IBC relay service will take 3 minutes to push your tokens to the destination chain."
+            message: "The IBC relay service will take 3 minutes to push your tokens to the destination chain. BOID tokens will need to be unwrapped on the unwrap page when sending to Telos chain."
           })
         } catch (error) {
           console.error(error)
@@ -356,7 +370,10 @@ export default defineComponent({
     loadBal() {
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return
-      void this.tknStore.loadIbcBal(acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken)
+      console.log("checkNative", this.checkNative)
+      const params:Parameters<typeof this.tknStore.loadNativeBal> = [acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken] as any
+      if (this.checkNative) void this.tknStore.loadNativeBal(...params)
+      else void this.tknStore.loadIbcBal(...params)
     }
   },
   watch: {

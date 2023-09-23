@@ -403,7 +403,7 @@ export default defineComponent({
         if (result) this.toAccountMessage = "Valid account"
         else this.toAccountMessage = "Invalid account"
       },
-      immediate: false
+      immediate: true
     }
   }
 })

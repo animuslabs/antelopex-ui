@@ -7,7 +7,8 @@ const routes:RouteRecordRaw[] = [
     children: [
       { path: "", component: () => import("pages/IndexPage.vue") },
       { path: "unwrap", component: () => import("pages/Unwrap.vue"), name: "unwrap" },
-      { path: "auth", component: () => import("pages/Auth.vue") }
+      { path: "auth", component: () => import("pages/Auth.vue") },
+      { path: "status", strict: false, component: () => import("pages/Status.vue"), name: "status" }
     ]
   },
 

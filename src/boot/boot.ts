@@ -15,6 +15,8 @@ declare module "@vue/runtime-core" {
 
 export const api = axios.create({ baseURL: "https://api.example.com" })
 
+
+
 export const chainLinks:Record<ChainKey, LinkManager> = {
   telos: new LinkManager(configs.telos),
   eos: new LinkManager(configs.eos),

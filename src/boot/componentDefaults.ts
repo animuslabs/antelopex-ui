@@ -33,7 +33,7 @@ export default boot(({ app }) => {
   setDefault(QInput, "square", true)
 
   // setDefault(QBtn, "flat", false)
-  setDefault(QBtn, "unelevated", true)
+  // setDefault(QBtn, "unelevated", true)
   // setDefault(QBtn, "stretch", true)
   setDefault(QBtn, "ripple", false)
 

@@ -97,7 +97,9 @@ module.exports = {
         after: false
       }
     ],
+    "@typescript-eslint/ban-ts-comment": "off",
     // VUE
-    "vue/multi-word-component-names": "off"
+    "vue/multi-word-component-names": "off",
+    "vue/no-mutating-props": "off"
   }
 }

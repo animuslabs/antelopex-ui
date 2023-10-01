@@ -1,5 +1,6 @@
 import { ChainKey } from "lib/config"
 import { ibcSymbols, ibcTokens } from "lib/ibcTokens"
+import { Xfer } from "lib/types/wraptoken.types"
 
 export type IbcSymbols = typeof ibcSymbols[number]
 // export type SymbolsObject = {
@@ -15,4 +16,17 @@ export interface IbcToken {
   img?:string
   tokenContract:Partial<Record<ChainKey, string>>
   wraplockContracts:Partial<Record<ChainKey, string>>
+}
+
+
+export interface IbcMeta {
+  data:Xfer
+  timestamp:Date
+  sym:string
+  destinationChain:ChainKey
+  contract:string
+  trxBlock:number
+  lib:number,
+  actDigest:string,
+  globalSequence:number,
 }

@@ -4,7 +4,7 @@ q-layout
     .q-ma-md
       .row.q-gutter-md.items-center
         .col-auto(style="width:170px;")
-          img(src="mainLogo.svg" style="margin:auto;").q-pt-sm
+          img(src="/mainLogo.svg" style="margin:auto;").q-pt-sm
         .col-auto
           p Seamless IBC Service
     .centered.q-mb-lg(style="width:100%; position:absolute; top:15px;").gt-sm
@@ -12,11 +12,13 @@ q-layout
         q-tabs(indicatorColor="transparent" activeClass="activeTab")
           q-route-tab(to="/" exact label="Token Bridge").col-auto
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
+          q-route-tab(to="/status" label="status").col-auto
     .centered.q-mb-lg(style="width:100%;").lt-md
       .col
-        q-tabs(indicatorColor="transparent" activeClass="activeTab")
+        q-tabs(indicatorColor="transparent" activeClass="activeTab" )
           q-route-tab(to="/" exact label="Token Bridge").col-auto
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
+          q-route-tab(to="status" label="status" ).col-auto
   q-page-container
     router-view.q-mt-lg
   .col.bg-yellow.q-pa-md.z-top

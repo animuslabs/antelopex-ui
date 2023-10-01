@@ -139,7 +139,7 @@ import { chainString, ibcStore } from "src/stores/ibcStore"
 import { TknStore } from "src/stores/tokenStore"
 import { userStore } from "src/stores/userStore"
 import { defineComponent } from "vue"
-import { printAsset, throwErr } from "lib/utils"
+import { printAsset, sleep, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
 
 // type TknStoreType = InstanceType<typeof TknStore>
@@ -320,7 +320,7 @@ export default defineComponent({
           })
           console.log("payFee", JSON.stringify(payFee, null, 2))
           const feeAct = makeAction.transfer(payFee, fee.contract, this.fromLink)
-
+          let txid = ""
           if (sendingFromNative) {
             const toAcct = tkn.wraplockContracts[toChain]
             if (!toAcct) throw new Error("No wraplock contract found for this token on this chain")
@@ -335,7 +335,8 @@ export default defineComponent({
             const tokenContract = token.tokenContract[bridge.fromChain]
             if (!tokenContract) throw new Error("No token contract on this chain found")
             const act = makeAction.transfer(transfer, tokenContract, this.fromLink)
-            await doActions([feeAct, act], this.fromLink)
+            const result = await doActions([feeAct, act], this.fromLink)
+            if (result) txid = result.transaction.id.toString()
           } else {
             const remoteToken = tkn.tokenContract[bridge.fromChain]
             if (!remoteToken) throw new Error("No token contract on this chain found")
@@ -359,12 +360,18 @@ export default defineComponent({
               }, nativetkn.nativeToken[bridge.fromChain] as string, this.fromLink)
               actions.unshift(wrapAction)
             }
-            await doActions(actions, this.fromLink)
+            const result = await doActions(actions, this.fromLink)
+            if (result) txid = result.transaction.id.toString()
           }
-          Dialog.create({
-            style: "background-color:white;",
-            message: "The IBC relay service will take 3 minutes to push your tokens to the destination chain. BOID tokens will need to be unwrapped on the unwrap page when sending to Telos chain."
-          })
+          // Dialog.create({
+          //   style: "background-color:white;",
+          //   message: "The IBC relay service will take 3 minutes to push your tokens to the destination chain. BOID tokens will need to be unwrapped on the unwrap page when sending to Telos chain.",
+          //   ok() {
+          //     console.log("dialog closed")
+          //   }
+          // })
+          await sleep(2000)
+          await this.$router.push({ name: "status", query: { txid, chain: bridge.fromChain } })
         } catch (error) {
           console.error(error)
         }

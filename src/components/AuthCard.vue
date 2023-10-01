@@ -89,9 +89,10 @@ export default defineComponent({
         if (!chainId) return
         const loggedInId = val.chainId
         if (!loggedInId) return
-        if (loggedInId !== chainId.toString()) this.selected = null
+        if (loggedInId !== chainId.toString()) return this.selected = null
         if (!val.auth) return
         console.log("WATCHER loggedIn:", val.auth.toString())
+        // val.chainId?.toString() ===
         this.selected = val.auth.toString()
       },
       deep: true,

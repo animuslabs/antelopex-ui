@@ -7,6 +7,7 @@ const sysContract = "antelopexsys"
 
 export type Config = {
   // contracts:Record[st],
+  chain:ChainKey,
   linkData:{
     chainId:string
     nodeUrl:string
@@ -15,11 +16,15 @@ export type Config = {
   explorer:string,
   proofDb:string,
   bridgeContract:string,
-  sysContract:string
+  sysContract:string,
+  history:{
+    hyperion:string[]
+  }
 }
 
 export const configs:Record<ChainKey, Config> = {
   telos: {
+    chain: "telos",
     linkData: {
       chainId: "4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11",
       nodeUrl: "https://telos.api.boid.animus.is",
@@ -31,9 +36,14 @@ export const configs:Record<ChainKey, Config> = {
     explorer: "https://explorer.telos.net",
     proofDb: "wss://telos.ibc.animus.is",
     bridgeContract: "ibc.prove",
+    history: {
+      // hyperion: ["https://hyperion.telos.animus.is"]
+      hyperion: ["https://mainnet.telos.net"]
+    },
     sysContract
   },
   eos: {
+    chain: "eos",
     linkData: {
       chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
       nodeUrl: "https://eos.api.boid.animus.is",
@@ -42,10 +52,13 @@ export const configs:Record<ChainKey, Config> = {
     explorer: "https://bloks.io",
     proofDb: "wss://eos.ibc.animus.is",
     bridgeContract: "ibc.prove",
-    sysContract
-
+    sysContract,
+    history: {
+      hyperion: ["https://eos.eosusa.io"]
+    }
   },
   wax: {
+    chain: "wax",
     linkData: {
       chainId: "1064487b3cd1a897ce03ae5b6a865651747e2e152090f99c1d19d44e01aea5a4",
       nodeUrl: "https://wax.greymass.com",
@@ -54,7 +67,10 @@ export const configs:Record<ChainKey, Config> = {
     explorer: "https://wax.bloks.io",
     proofDb: "wss://wax.ibc.animus.is",
     bridgeContract: "ibc.prove",
-    sysContract
+    sysContract,
+    history: {
+      hyperion: ["https://wax.eosusa.io "]
+    }
   }
   // ux: {
   //   linkData: {

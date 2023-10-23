@@ -46,7 +46,8 @@ export const configs:Record<ChainKey, Config> = {
     chain: "eos",
     linkData: {
       chainId: "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",
-      nodeUrl: "https://eos.api.boid.animus.is",
+      // nodeUrl: "https://eos.api.boid.animus.is",
+      nodeUrl: "https://eos.greymass.com",
       appName: "AntelopeX.io-eos"
     },
     explorer: "https://bloks.io",

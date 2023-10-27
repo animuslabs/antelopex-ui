@@ -2,7 +2,7 @@ import { ChainKey } from "lib/config"
 import { IbcSymbols, IbcToken } from "lib/types/ibc.types"
 
 // export const ibcSymbols = ["EOS", "TLOS", "WAX", "UX", "UTXRAM", "BOID"] as const
-export const ibcSymbols = ["EOS", "TLOS", "WAX", "BOID"] as const
+export const ibcSymbols = ["EOS", "TLOS", "WAX", "BOID", "BANANA"] as const
 export type IBCSymbol = typeof ibcSymbols[number]
 
 export const ibcTokens:Record<IbcSymbols, IbcToken> = {
@@ -62,6 +62,19 @@ export const ibcTokens:Record<IbcSymbols, IbcToken> = {
       // ux: "ibc.wl.ux",
       eos: "ibc.wl.eos"
       // telos: "ibc.wl.tlos"
+    }
+  },
+  BANANA: {
+    nativeChain: "eos",
+    precision: 4,
+    tokenContract: {
+      eos: "banana.moon",
+      telos: "banana.moon ",
+      wax: "banana.moon "
+    },
+    wraplockContracts: {
+      telos: "bananalocked",
+      wax: "bananasonwax"
     }
   }
   // UX: {

@@ -21,6 +21,10 @@ export interface IbcToken {
 
 export interface IbcMeta {
   data:Xfer
+  token:IbcToken,
+  toNative:boolean,
+  digest:string
+  destinationContract:string,
   timestamp:Date
   sym:string
   destinationChain:ChainKey

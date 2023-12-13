@@ -1,4 +1,4 @@
-import { Asset, Name } from "anchor-link"
+import { Asset, ChainAPI, Name } from "anchor-link"
 import { AxiosError, AxiosResponse } from "axios"
 import { ChainKey, chainNames } from "lib/config"
 import { chainLinks } from "src/boot/boot"
@@ -164,3 +164,4 @@ export async function customRace<T>(requests:Promise<any>[]):Promise<any> {
     }
   })
 }
+

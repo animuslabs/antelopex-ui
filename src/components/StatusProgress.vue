@@ -35,6 +35,15 @@ div
     .centered
       q-spinner(size="150px" color="primary")
   div(v-if="step==3")
+    .centered.q-mb-md
+      h3.text-white Transaction Relayed!
+    .centered.q-mb-md
+      q-btn(label="view account" type="a" :href="acctLink" target="_blank" color="primary" size="lg")
+    //- .centered
+    //-   p.text-white querying for transaction details...
+    //-   q-spinner(color="primary")
+
+  div(v-if="step==4")
     .centered
       h3.text-white Transaction Relayed!
     .centered
@@ -53,7 +62,7 @@ div
 
 import { configs, type ChainKey } from "lib/config"
 import { type IbcMeta } from "lib/types/ibc.types"
-import { normalizeRange, printAsset, sleep, throwErr } from "lib/utils"
+import { normalizeRange, printAsset, sleep, throwErr, toObject } from "lib/utils"
 import { chainLinks } from "src/boot/boot"
 import { chainString } from "src/stores/ibcStore"
 import { watch, computed, ref } from "vue"
@@ -61,6 +70,8 @@ import prettyms from "pretty-ms"
 import { getHypClient } from "lib/hyp"
 import { Action } from "@proton/hyperion"
 import ms from "ms"
+import { ibcTokens } from "lib/ibcTokens"
+import { Asset } from "anchor-link"
 
 const props = defineProps<{
   ibcMeta:IbcMeta,
@@ -80,6 +91,7 @@ const printTimeUntil = ref("")
 const relayedTrx = ref<Action<any> | null>(null)
 const relayer = ref<null | string>(null)
 const exploreLink = ref<undefined | string>(undefined)
+const acctLink = ref<undefined | string>(undefined)
 
 let step1Interval:any = null
 
@@ -110,50 +122,55 @@ function startStep1() {
 async function startStep2() {
   console.log("start step 2")
   step.value = 2
-  const hyp = getHypClient(props.ibcMeta.destinationChain)
-  let checkFrom = new Date(props.ibcMeta.timestamp).valueOf() - ms("1900m")
+  const params = {
+    code: props.ibcMeta.destinationContract,
+    table: "processed",
+    scope: props.ibcMeta.destinationContract,
+    reverse: true,
+    limit: 1000
+  }
+  let found = false
+  await loop()
   async function loop():Promise<void> {
     if (step.value !== 2) return
-    const actions = await hyp.getActionsRange(checkFrom, checkFrom + ms("5100m"), "checkproofb", "ibc.prove", 1000)
-    console.log("found actions:", actions.length)
-    for (const action of actions) {
-      const proof = action.act.data.actionproof
-      const seq:number = proof.receipt.global_sequence
-      const digest:string = proof.receipt.act_digest
-      console.log(seq, digest)
-      if (seq == props.ibcMeta.globalSequence && digest == props.ibcMeta.actDigest) {
-        console.log("found matching action, finish loop")
-        relayedTrx.value = action
-        void startStep3()
-        break
-      }
-    }
-    console.log("all actions searched, sleep and try again")
-    const exists = actions[0]?.["@timestamp"]
-    if (exists) checkFrom = new Date(exists).valueOf()
+    if (found) return
+    const digests = await chainLinks[props.ibcMeta.destinationChain].rpc.get_table_rows(params)
+    console.log("digests:", digests.rows.length)
+    let digestList = digests.rows.map(r => r.receipt_digest)
+    found = digestList.includes(props.ibcMeta.digest)
+    console.log("found", found)
     await sleep(4000)
-    if (!relayedTrx.value) return loop()
-    else return
+    if (!found) {
+      await sleep(ms("10s"))
+      return loop()
+    } else return
   }
-  await sleep(ms("10s"))
   await loop()
-  console.log("loop finished, action found", relayedTrx.value)
-}
-
-async function startStep3() {
   step.value = 3
-  console.log("start step 3")
-  if (!relayedTrx.value) throwErr("Should never be null here")
-  const trx = await getHypClient(props.ibcMeta.destinationChain).getTrx(relayedTrx.value.trx_id)
+  acctLink.value = configs[props.ibcMeta.destinationChain].explorer + "/account/" + props.ibcMeta.data.beneficiary
+  const hyp = getHypClient(props.ibcMeta.destinationChain)
+  // hyp.hypClients[0]?.get_actions({})
+  const trx = await getHypClient(props.ibcMeta.destinationChain).getActionsRange(Date.now() - ms("2d"), Date.now() + 1000, "transfer", props.ibcMeta.data.beneficiary.toString(), 10)
+  // hyp
   console.log(trx)
 
-  const relayed = trx?.actions.find(act => act.act.name === "issuea" || act.act.name === "issueb" || act.act.name === "withdrawa" || act.act.name === "withdrawb")
-  if (!relayed) throwErr("this is never null here")
-  if (relayed.act.authorization.length > 1) {
-    relayer.value = relayed.act.authorization[relayed.act.authorization.length - 1]?.actor || null
-  } else relayer.value = relayed.act.authorization[0]?.actor || null
-  exploreLink.value = configs[props.ibcMeta.destinationChain].explorer + "/transaction/" + relayedTrx.value.trx_id
+  // console.log("loop finished, action found", relayedTrx.value)
 }
+
+// async function startStep4() {
+//   step.value = 4
+//   console.log("start step 4")
+//   if (!relayedTrx.value) throwErr("Should never be null here")
+//   const trx = await getHypClient(props.ibcMeta.destinationChain).getTrx(relayedTrx.value.trx_id)
+//   console.log(trx)
+
+//   const relayed = trx?.actions.find(act => act.act.name === "issuea" || act.act.name === "issueb" || act.act.name === "withdrawa" || act.act.name === "withdrawb")
+//   if (!relayed) throwErr("this is never null here")
+//   if (relayed.act.authorization.length > 1) {
+//     relayer.value = relayed.act.authorization[relayed.act.authorization.length - 1]?.actor || null
+//   } else relayer.value = relayed.act.authorization[0]?.actor || null
+//   exploreLink.value = configs[props.ibcMeta.destinationChain].explorer + "/transaction/" + relayedTrx.value.trx_id
+// }
 
 watch([() => props.ibcMeta], async() => {
   startStep1()

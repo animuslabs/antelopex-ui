@@ -110,7 +110,7 @@ export class HyperionClient {
 
   async getActionsRange(from:number, until:number, action:string, account:string, limit = 500) {
     console.info("getting actions in range from:", new Date(from).toISOString(), "to:", new Date(until).toISOString(), "for account", account)
-    await sleep(ms("3s"))
+    // await sleep(ms("3s"))
     let params:any = {
       "act.name": action,
       "act.account": account,

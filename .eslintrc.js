@@ -38,7 +38,6 @@ module.exports = {
 
   // add your custom rules here
   rules: {
-    "@typescript-eslint/no-namespace": "off",
     "vue/max-attributes-per-line": "off",
     "no-multiple-empty-lines": "off",
     "@typescript-eslint/no-floating-promises": ["error"],
@@ -90,15 +89,15 @@ module.exports = {
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-empty-function": "warn",
-    "@typescript-eslint/type-annotation-spacing": [
-      "error",
-      {
-        after: false
-      }
-    ],
+    "@typescript-eslint/type-annotation-spacing": ["error", {
+      after: false
+    }],
+    "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/ban-types":"off",
+    "@typescript-eslint/no-namespace":"off",
+    "@typescript-eslint/no-empty-interface":"off",
     // VUE
-    "vue/multi-word-component-names": "off",
-    "vue/no-mutating-props": "off"
+    "vue/multi-word-component-names": "off"
   }
 }

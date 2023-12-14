@@ -145,7 +145,10 @@ const trxMeta = computed<IbcMeta|null>(() => {
     if (!validDestination) return null
     else destinationChain = validDestination[0] as ChainKey
   }
-  const destinationContract:string|undefined = toNative ? token.wraplockContracts[destinationChain] : token.tokenContract[destinationChain]
+  console.log("token", token)
+  console.log("toNative", toNative)
+
+  const destinationContract:string|undefined = toNative ? token.wraplockContracts[chainName.value] : token.tokenContract[destinationChain]
   if (!destinationContract) return throwErr("destination contract is undefined")
   console.log("trxmeta here")
   const returnData:IbcMeta = {

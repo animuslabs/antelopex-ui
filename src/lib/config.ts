@@ -70,7 +70,7 @@ export const configs:Record<ChainKey, Config> = {
     bridgeContract: "ibc.prove",
     sysContract,
     history: {
-      hyperion: ["https://wax.eosusa.io "]
+      hyperion: ["https://wax.eosusa.io"]
     }
   }
   // ux: {

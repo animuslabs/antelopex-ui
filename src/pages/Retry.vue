@@ -6,7 +6,7 @@ q-page(padding)
   .centered.items-center.q-gutter-md
     h1.text-white Retry
   .centered
-    h5.text-white(style="max-width:400px;") If an IBC transfer initiated on an external bridge has failed, you can pay a small fee for the AntelopeX workers to complete it.
+    h5.text-white(style="max-width:600px;") If an IBC transfer initiated on an external bridge has failed, you can pay a small fee for the AntelopeX workers to complete it.
   .centered.q-pb-md.q-pt-lg
     .col-auto
       ChainSelect(:chainArray="chainButtons" :selectedChain="data.chainName" @chainSelected="(val)=>data.chainName = val")
@@ -38,10 +38,10 @@ q-page(padding)
     AuthCard(:chain="computed.originChainLink",:name="data.chainName").q-mt-lg
   .centered.q-mt-lg
     q-btn(:label="computed.relayBtnLabel" size="lg" color="info" @click="sendSpecialOrder()" :disable="disableBtn")
-  .centered.q-mt-md
+  .centered.q-mt-lg
     h3.text-warning.text-weight-bold Warning
-  .centered
-    p.text-white(style="max-width:500px;") Do not use this page if you initiated the transfer using AntelopeX. You already paid the relay fee and the workers will automatically handle it for you.
+  .centered.q-mt-sm
+    p.text-white(style="max-width:600px;") Do not use this page if you initiated the transfer using AntelopeX. You already paid the relay fee and the workers will automatically handle it for you.
 
 
 </template>
@@ -94,7 +94,7 @@ async function sendSpecialOrder() {
   const result = await doActions([act], computed.originChainLink)
   if (result?.processed) {
     await sleep(ms("3s"))
-    await router.push({ name: "status", query: { txid: data.txid, chain: data.chainName } })
+    await router.push({ name: "status", query: { txid: data.txid, chain: data.chainName, hideDetails: "true" } })
   }
 }
 

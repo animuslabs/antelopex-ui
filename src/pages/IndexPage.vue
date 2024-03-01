@@ -370,7 +370,7 @@ export default defineComponent({
           //   }
           // })
           await sleep(2000)
-          await this.$router.push({ name: "status", query: { txid, chain: bridge.fromChain } })
+          await this.$router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
         } catch (error) {
           console.error(error)
         }

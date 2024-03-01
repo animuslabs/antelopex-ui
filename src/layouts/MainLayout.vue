@@ -13,12 +13,14 @@ q-layout
           q-route-tab(to="/" exact label="Token Bridge").col-auto
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
           q-route-tab(to="/status" label="status").col-auto
+          q-route-tab(to="/retry" label="retry").col-auto
     .centered.q-mb-lg(style="width:100%;").lt-md
       .col
         q-tabs(indicatorColor="transparent" activeClass="activeTab" )
           q-route-tab(to="/" exact label="Token Bridge").col-auto
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
           q-route-tab(to="status" label="status" ).col-auto
+          q-route-tab(to="retry" label="retry" ).col-auto
   q-page-container
     router-view.q-mt-lg
   .col.bg-yellow.q-pa-md.z-top

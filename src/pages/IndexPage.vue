@@ -105,7 +105,6 @@ q-page(padding)
             :loading="loadingToAccount"
             style="width:365px; max-width:80vw;"
             inputStyle="font-size: 25px;"
-
           )
             template(v-slot:error)
               p.text-red {{ toAccountMessage }}

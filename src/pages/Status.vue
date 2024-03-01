@@ -35,7 +35,7 @@ q-page(padding)
 <script setup lang="ts">
 import { type ChainKey, chainNames } from "lib/config"
 import ChainSelect from "src/components/ChainSelect.vue"
-import { computed, nextTick, onDeactivated, onMounted, onUnmounted, ref, watch, watchEffect } from "vue"
+import { computed, nextTick, onDeactivated, onMounted, onUnmounted, ref, toRefs, watch, watchEffect } from "vue"
 import { useRouter } from "vue-router"
 import { chainButtons, deepClone, sleep, stringToBool, throwErr } from "lib/utils"
 import { Checksum256 } from "anchor-link"

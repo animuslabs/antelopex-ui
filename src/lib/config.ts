@@ -38,7 +38,7 @@ export const configs:Record<ChainKey, Config> = {
     bridgeContract: "ibc.prove",
     history: {
       // hyperion: ["https://hyperion.telos.animus.is"]
-      hyperion: ["https://mainnet.telos.net"]
+      hyperion: ["https://mainnet.telos.net", "https://hyperion.telos.animus.is"]
     },
     sysContract
   },

@@ -13,7 +13,7 @@ q-page(padding)
     .col-auto
       .row.q-pt-lg
         h5.text-weight-light.text-white Target Account
-      authCard(:chain="destinationChain" :name="destinationChainName").q-pa-sm
+      AuthCard(:chain="destinationChain" :name="destinationChainName").q-pa-sm
   .centered.q-mt-md
     div(style="max-width:400px;")
       .col-auto
@@ -30,7 +30,7 @@ import type { QBtnDropdown } from "quasar"
 import { chainLinks } from "src/boot/boot"
 import { chainString } from "src/stores/ibcStore"
 import { type ExtractPropTypes, watch, computed, reactive, ref, type ComputedRef, onMounted } from "vue"
-import authCard from "src/components/AuthCard.vue"
+import AuthCard from "src/components/AuthCard.vue"
 import { chainButtons } from "src/lib/utils"
 import unwrappableTokens from "src/components/UnwrappableTokens.vue"
 import { userStore as UserStore } from "src/stores/userStore"

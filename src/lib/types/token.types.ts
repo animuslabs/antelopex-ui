@@ -51,3 +51,21 @@ export class Transfer extends Struct {
   @Struct.field(Asset) quantity!:Asset
   @Struct.field("string") memo!:string
 }
+
+
+// class PrimitiveTransfer {
+//   from = ""
+//   to = ""
+//   quantity = ""
+//   memo = ""
+// }
+
+// // easy to bind to reactive components and forms
+// const xfer:PrimitiveTransfer = {
+//   from: "",
+//   to: "",
+//   quantity: "",
+//   memo: ""
+// }
+// // convert when ready to send in a transaction
+// const wharfTransfer = Transfer.from(xfer)

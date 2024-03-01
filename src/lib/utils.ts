@@ -1,8 +1,10 @@
-import { Asset, ChainAPI, Name } from "anchor-link"
+import { Asset, ChainAPI, Checksum256, Name } from "anchor-link"
 import { AxiosError, AxiosResponse } from "axios"
 import { ChainKey, chainNames } from "lib/config"
+import { GetTransaction, getHypClient } from "lib/hyp"
 import { chainLinks } from "src/boot/boot"
 import { chainString } from "src/stores/ibcStore"
+import { ref } from "vue"
 
 export function printAsset(asset:Asset):string {
   const assetString = asset.toString()
@@ -78,6 +80,10 @@ export function shuffle<T>(array:T[]) {
   }
 
   return array
+}
+export function validAccountName(name:string) {
+  const validRegex = /(^[a-z1-5.]{0,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/
+  return validRegex.test(name)
 }
 
 export async function accountExists(chain:ChainKey, name:string) {

@@ -4,6 +4,11 @@ import { Notify } from "quasar"
 import { Transfer } from "./types/token.types"
 import { Retire } from "lib/types/wraptoken.types"
 
+
+export function makeSpecialOrderMemo(trxid:string, blockNum:number) {
+  return `trxid=${trxid} block_num=${blockNum}`
+}
+
 export const makeAction = {
   transfer(data:{from:NameType, to:NameType, quantity:AssetType, memo:string}, contract:NameType, link:LinkManager):AnyAction {
     const authorization = link.session?.auth

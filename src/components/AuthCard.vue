@@ -18,7 +18,7 @@ div(v-if="!hide" style="width:380px; max-width:80vw")
           q-avatar
             q-btn(icon="delete" flat color="grey-3" size="sm" @click="removeAccount(account.auth.toString())").bg-transparent
   .centered
-    q-btn(@click="addAccount()" icon="add" :label="'add '+name +' account'").q-mt-xs.full-width
+    q-btn(@click="addAccount()" icon="add" :label="'link '+name +' account'").q-mt-xs.full-width
 </template>
 
 <script lang="ts">
@@ -71,6 +71,8 @@ export default defineComponent({
   },
   async mounted() {
     await this.loadSessions()
+    console.log("loggedIn", this.userStore.loggedIn)
+    void this.$props.chain.try_restore_session()
   },
   watch: {
     chain: {
@@ -83,6 +85,7 @@ export default defineComponent({
     },
     "userStore.getLoggedIn": {
       handler: function(val:LoggedInState|false) {
+        console.log("val", val)
         this.selected = null
         if (!val) return
         const chainId = this.chain.link.chains[0]?.chainId
@@ -93,6 +96,7 @@ export default defineComponent({
         if (!val.auth) return
         console.log("WATCHER loggedIn:", val.auth.toString())
         // val.chainId?.toString() ===
+        console.log(val.auth)
         this.selected = val.auth.toString()
       },
       deep: true,

@@ -11,6 +11,7 @@ q-layout
       .col
         q-tabs(indicatorColor="transparent" activeClass="activeTab")
           q-route-tab(to="/" exact label="Token Bridge").col-auto
+          //- q-route-tab(to="/nft" label="NFT Bridge").col-auto
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
           q-route-tab(to="/status" label="status").col-auto
           q-route-tab(to="/retry" label="retry").col-auto
@@ -18,6 +19,7 @@ q-layout
       .col
         q-tabs(indicatorColor="transparent" activeClass="activeTab" )
           q-route-tab(to="/" exact label="Token Bridge").col-auto
+          //- q-route-tab(to="nft" label="NFT Bridge" ).col-auto
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
           q-route-tab(to="status" label="status" ).col-auto
           q-route-tab(to="retry" label="retry" ).col-auto

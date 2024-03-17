@@ -2,7 +2,7 @@
 q-page(padding)
   .centered.relative-position
     .col-auto
-      img(src="/unwrap-icon.svg" style="width:370px; max-width:80vw; top:170px; opacity:.7; ").absolute-center
+      img(src="/unwrap-icon.svg" style="width:370px; max-width:80vw; top:170px; opacity:.8; ").absolute-center
   .centered
     h1.text-white Unwrap IBC Token
   .centered

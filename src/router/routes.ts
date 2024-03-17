@@ -9,7 +9,8 @@ const routes:RouteRecordRaw[] = [
       { path: "unwrap", component: () => import("pages/Unwrap.vue"), name: "unwrap" },
       { path: "auth", component: () => import("pages/Auth.vue") },
       { path: "status", strict: false, component: () => import("pages/Status.vue"), name: "status" },
-      { path: "retry", strict: false, component: () => import("pages/Retry.vue"), name: "retry" }
+      { path: "retry", strict: false, component: () => import("pages/Retry.vue"), name: "retry" },
+      { path: "nft", strict: false, component: () => import("pages/Nft.vue"), name: "nft" }
     ]
   },
 

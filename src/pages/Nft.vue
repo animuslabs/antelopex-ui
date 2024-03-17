@@ -2,9 +2,11 @@
 q-page(padding)
   .centered.relative-position
     .col-auto
-      img(src="/bg-logo.svg" style="width:370px; max-width:80vw; top:170px;").absolute-center
+      //- img(src="/nft_logo.svg" style="width:370px; max-width:80vw; top:170px;").absolute-center
+      img(src="/nft_logo.svg" style="width:370px; max-width:80vw; top:120px; opacity: 1; z-index:-100; ").absolute-center
+
   .centered
-    h1.text-white Token Bridge
+    h1.text-white NFT Bridge
   q-list(padding).lt-sm.full-width.q-pa-lg
     q-item(dense).centered
       .col-auto

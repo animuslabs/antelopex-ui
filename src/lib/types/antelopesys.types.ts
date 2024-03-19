@@ -4,38 +4,46 @@ import { Asset, Checksum256, ExtendedAsset, Int64, Name, Struct, UInt32, UInt64 
 
 @Struct.type("Config")
 export class Config extends Struct {
-    @Struct.field(ExtendedAsset) min_fee!:ExtendedAsset
+  @Struct.field(ExtendedAsset) min_fee!:ExtendedAsset
+}
+
+@Struct.type("IbcNft")
+export class IbcNft extends Struct {
+  @Struct.field(Name) contract!:Name
+  @Struct.field("bool") native!:boolean
+  @Struct.field(Name) paired_contract!:Name
+  @Struct.field(Name) paired_chain!:Name
 }
 
 @Struct.type("IbcOrder")
 export class IbcOrder extends Struct {
-    @Struct.field(Name) depositor!:Name
-    @Struct.field(Int64) fee_paid!:Int64
-    @Struct.field(Checksum256) trxid!:Checksum256
-    @Struct.field(UInt32) block_num!:UInt32
+  @Struct.field(Name) depositor!:Name
+  @Struct.field(Int64) fee_paid!:Int64
+  @Struct.field(Checksum256) trxid!:Checksum256
+  @Struct.field(UInt32) block_num!:UInt32
 }
 
 @Struct.type("IbcSpecialOrder")
 export class IbcSpecialOrder extends Struct {
-    @Struct.field(UInt64) id!:UInt64
-    @Struct.field(Name) depositor!:Name
-    @Struct.field(Int64) fee_paid!:Int64
-    @Struct.field(Checksum256) trxid!:Checksum256
-    @Struct.field(UInt32) block_num!:UInt32
+  @Struct.field(UInt64) id!:UInt64
+  @Struct.field(Name) depositor!:Name
+  @Struct.field(Int64) fee_paid!:Int64
+  @Struct.field(Checksum256) trxid!:Checksum256
+  @Struct.field(UInt32) block_num!:UInt32
 }
 
 @Struct.type("WraplockContract")
 export class WraplockContract extends Struct {
-    @Struct.field(Name) contract!:Name
-    @Struct.field(Name) destination_chain!:Name
+  @Struct.field(Name) contract!:Name
+  @Struct.field(Name) destination_chain!:Name
 }
 
 @Struct.type("IbcToken")
 export class IbcToken extends Struct {
-    @Struct.field(Asset.Symbol) symbol!:Asset.Symbol
-    @Struct.field(Name) native_chain!:Name
-    @Struct.field(Name) token_contract!:Name
-    @Struct.field(WraplockContract, { array: true }) wraplock_contracts!:WraplockContract[]
+  @Struct.field(Asset.Symbol) symbol!:Asset.Symbol
+  @Struct.field(Name) native_chain!:Name
+  @Struct.field(Name) token_contract!:Name
+  @Struct.field(WraplockContract, { array: true }) wraplock_contracts!:WraplockContract[]
 }
 
 @Struct.type("clearconfig")
@@ -44,30 +52,35 @@ export class Clearconfig extends Struct {
 
 @Struct.type("rmibctkn")
 export class Rmibctkn extends Struct {
-    @Struct.field(Asset.Symbol) symbol!:Asset.Symbol
+  @Struct.field(Asset.Symbol) symbol!:Asset.Symbol
 }
 
 @Struct.type("rmorder")
 export class Rmorder extends Struct {
-    @Struct.field(UInt64) order_id!:UInt64
+  @Struct.field(UInt64) order_id!:UInt64
 }
 
 @Struct.type("rmspeciorder")
 export class Rmspeciorder extends Struct {
-    @Struct.field(UInt64) order_id!:UInt64
+  @Struct.field(UInt64) order_id!:UInt64
 }
 
 @Struct.type("setconfig")
 export class Setconfig extends Struct {
-    @Struct.field(Config) config!:Config
+  @Struct.field(Config) config!:Config
+}
+
+@Struct.type("setibcnfts")
+export class Setibcnfts extends Struct {
+  @Struct.field(IbcNft, { array: true }) ibcnftrows!:IbcNft[]
 }
 
 @Struct.type("setibctkn")
 export class Setibctkn extends Struct {
-    @Struct.field(IbcToken) ibctokenrow!:IbcToken
+  @Struct.field(IbcToken) ibctokenrow!:IbcToken
 }
 
 @Struct.type("setibctkns")
 export class Setibctkns extends Struct {
-    @Struct.field(IbcToken, { array: true }) ibctokenrows!:IbcToken[]
+  @Struct.field(IbcToken, { array: true }) ibctokenrows!:IbcToken[]
 }

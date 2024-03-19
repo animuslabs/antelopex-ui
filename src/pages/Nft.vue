@@ -60,68 +60,56 @@ q-page(padding)
       .centered
         q-icon(name="priority_high" color="amber" size="100px")
       h4.text-white Chain combination not supported
-  .centered(v-if="!chainSelectError && !chainSelectError2").no-wrap
-    .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:600px; max-width:80vw;")
-      .centered
-      .centered.q-pt-sm
-        .col-auto
-          h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Sending from {{ ibcStore.tknBridge.fromChain }} Account
-          //- q-btn-dropdown( transitionDuration="0" noCaps :label="printLoggedIn || '' " size="lg" style=" width:200px; " align="left" split ref="selectAccount" @click="showSelectAccount()")
-      .centered
-        .col-auto
-          auth-card(:chain="fromLink" :name="ibcStore.tknBridge.fromChain").q-pa-sm
-      .centered.q-ma-md.no-wrap
-        .centered.no-wrap(style="width:380px; max-width:80vw").q-pb-lg
-          .col-auto.relative-position
-            h6.text-white Quantity
-              q-input(
-              dark
-              labelColor="white"
-              filled
-              color="white"
-              noErrorIcon
-              v-model.number="ibcStore.tknBridge.quantity"
-              type="number"
-              inputStyle="font-size: 25px;"
-              style="max-width:235px;"
-            )
-            p.text-white.q-mt-xs.absolute-bottom(style="width:300px; bottom:-25px;") {{`${user} balance:`}} #[a.text-grey-2(@click="setMaxQuantity()" href="#") {{ tknBal }}]
+  .centered(v-if="!chainSelectError && !chainSelectError2").no-wrap.q-gutter-md.q-pt-lg
+    .col-auto
+      .outline-box.q-pa-md.q-mt-lg.relative-position(style="min-width:200px; max-width:80vw;")
+        .centered
+        .centered.q-pt-sm
           .col-auto
-            q-btn-dropdown(noCaps square :label="selectedToken" size="lg" style=" width:130px; margin-top:32px; height:56px;" align="left" split ref="selectToken" @click="showSelectToken()").cursor-pointer
-              q-list(separator padding)
-                q-item( v-for="token of ibcStore.availableSymbols" clickable v-close-popup @click="selectToken(token)").q-ma-sm
-                  q-item-section
-                    q-item-label(style="font-size: 20px;").text-capitalize {{ token }}
-      .q-mt-lg
-      .centered
-        .col-auto
-          h6.text-white {{`Destination Account on ${chainString(ibcStore.tknBridge.toChain)} chain`}}
-          q-input(
-            filled
-            dark
-            noErrorIcon
-            color="white"
-            v-model="ibcStore.tknBridge.destinationAccount"
-            debounce="500"
-            :error="toAccountValid === false"
-            :loading="loadingToAccount"
-            style="width:365px; max-width:80vw;"
-            inputStyle="font-size: 25px;"
-          )
-            template(v-slot:error)
-              p.text-red {{ toAccountMessage }}
-            template(v-slot:hint)
-              p.text-white {{ toAccountMessage }}
+            h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Sending from {{ ibcStore.tknBridge.fromChain }} Account
+            //- q-btn-dropdown( transitionDuration="0" noCaps :label="printLoggedIn || '' " size="lg" style=" width:200px; " align="left" split ref="selectAccount" @click="showSelectAccount()")
+        .centered
+          .col-auto
+            auth-card(:chain="fromLink" :name="ibcStore.tknBridge.fromChain").q-pa-sm
+        .q-mt-lg
+        .centered
+          .col-auto
+            h6.text-white {{`Destination Account on ${chainString(ibcStore.tknBridge.toChain)} chain`}}
+            q-input(
+              filled
+              dark
+              noErrorIcon
+              color="white"
+              v-model="ibcStore.tknBridge.destinationAccount"
+              debounce="500"
+              :error="toAccountValid === false"
+              :loading="loadingToAccount"
+              style="width:365px; max-width:80vw;"
+              inputStyle="font-size: 25px;"
+            )
+              template(v-slot:error)
+                p.text-red {{ toAccountMessage }}
+              template(v-slot:hint)
+                p.text-white {{ toAccountMessage }}
 
-      .centered.q-mb-md.text-white.q-mt-lg
-        h5 Relay Fee: {{ printAsset(relayFee) }}
-      //- .centered.q-mb-md.text-white.q-mt-lg
-      //-   h5 Service is not yet available
-      div(style="height:30px;")
-      .centered(style=" bottom:-25px;").absolute-bottom
-        //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
-        q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
-    div(style="height:50px;").full-width
+        .centered.q-mb-md.text-white.q-mt-lg
+          h5 Relay Fee: {{ printAsset(relayFee) }}
+        //- .centered.q-mb-md.text-white.q-mt-lg
+        //-   h5 Service is not yet available
+        div(style="height:30px;")
+        .centered(style=" bottom:-25px;").absolute-bottom
+          //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
+          q-btn(rounded size="lg" :label="`Send NFT`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
+    .col-auto
+      .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:800px; max-width:80vw;")
+        .centered
+        .centered.q-pt-sm
+          .col-auto
+            h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Bridgable NFTs ({{ bridgableNfts.length }})
+        .centered(style="max-height:600px; overflow-y:auto;")
+          div(v-for="nft of bridgableNfts" :key="nft.asset_id")
+            div {{ nft }}
+
 </template>
 
 <script lang="ts">
@@ -142,6 +130,8 @@ import { userStore } from "src/stores/userStore"
 import { defineComponent } from "vue"
 import { printAsset, sleep, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
+import { useNftStore } from "src/stores/nftStore"
+import { fromNativeNft, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
 
 // type TknStoreType = InstanceType<typeof TknStore>
 // let ok:TknStoreType = {}
@@ -168,9 +158,33 @@ export default defineComponent({
       loadingToAccount: false,
       toAccountValid: null as boolean | null,
       toAccountMessage: ""
+
     }
   },
   computed: {
+    bridgableNfts() {
+      const acct = this.userStore.getLoggedIn
+      if (!acct || !acct.account) return []
+      const assets = this.nftStore.nftRows[acct.account]
+      if (assets) {
+        return Object.values(assets).filter(el => {
+          const fromNative = fromNativeNft(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+          if (fromNative) {
+            const wl = nftWhitelistCache[this.ibcStore.tknBridge.fromChain].find(el2 => {
+              return el2.collection_name.toString() == el.collection_name.toString()
+            })
+            if (wl) return wl.schema_names.map(el => el.toString()).includes(el.schema_name.toString()) || wl.template_ids.map(el => el.toString()).includes(el.template_id.toString())
+            else return false
+          } else {
+            const mmap = nftMetaMapCache[this.ibcStore.tknBridge.fromChain].find(el2 => {
+              return el2.local_collection_name.toString() == el.collection_name.toString()
+            })
+            if (mmap) return true
+            else return false
+          }
+        })
+      } else return []
+    },
     checkNative():boolean {
       return !!ibcHubs[this.selectedToken]?.nativeToken[this.ibcStore.tknBridge.fromChain]
     },
@@ -251,6 +265,9 @@ export default defineComponent({
           value: symbol
         }
       })
+    },
+    nftStore() {
+      return useNftStore(this.ibcStore.tknBridge.fromChain)
     }
   },
   methods: {
@@ -378,26 +395,26 @@ export default defineComponent({
         }
       })
     },
-    loadBal() {
+    async loadAccountNfts() {
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return
       console.log("checkNative", this.checkNative)
-      let tknStore = this.tknStore
-      const params:Parameters<typeof tknStore.loadNativeBal> = [acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken] as any
-      if (this.checkNative) void this.tknStore.loadNativeBal(...params)
-      else void this.tknStore.loadIbcBal(...params)
+      await this.nftStore.loadAccountNfts(acct.account)
+      // let tknStore = this.tknStore
+      // const params:Parameters<typeof tknStore.loadNativeBal> = [acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken] as any
+      // if (this.checkNative) void this.tknStore.loadNativeBal(...params)
+      // else void this.tknStore.loadIbcBal(...params)
+    },
+    async loadNftWl() {
+      const native = await fromNativeNft(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+      if (native) await loadNftWl(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+      else await loadNftMetaMap(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
     }
   },
   watch: {
-    selectedToken: {
-      handler(val) {
-        this.loadBal()
-      },
-      immediate: false
-    },
     "userStore.getLoggedIn": {
       handler(val) {
-        this.loadBal()
+        void this.loadAccountNfts()
       },
       immediate: false
     },
@@ -405,8 +422,9 @@ export default defineComponent({
       async handler(val:ChainKey, oldVal) {
         // if (val === this.ibcStore.tknBridge.toChain) this.ibcStore.tknBridge.fromChain = oldVal
         await this.fromLink.try_restore_session()
-        this.loadBal()
+        await this.loadAccountNfts()
         if (!this.ibcStore.sysConfig[val]) await this.ibcStore.loadSysConfig(val)
+        await this.loadNftWl()
       },
       immediate: true
     },
@@ -415,6 +433,7 @@ export default defineComponent({
         // if (val === this.ibcStore.tknBridge.fromChain) this.ibcStore.tknBridge.toChain = oldVal
         // await this.fromLink.try_restore_session()
         // this.loadBal()
+        await this.loadNftWl()
       },
       immediate: false
     },

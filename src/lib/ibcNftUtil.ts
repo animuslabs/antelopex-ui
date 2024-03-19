@@ -77,6 +77,7 @@ async function findNftWrapContract(fromChainKey:ChainKey, toChainKey:ChainKey) {
 
 export function fromNativeNft(fromChainKey:ChainKey, toChainKey:ChainKey) {
   // await loadIbcNfts(fromChainKey)
+  if (!ibcNftCache[fromChainKey]) throwErr(`No ibcNftCache loaded for ${fromChainKey}`)
   const native = ibcNftCache[fromChainKey].find(nft => nft.paired_chain.toString() === toChainKey && nft.native)
   return !!native
 }

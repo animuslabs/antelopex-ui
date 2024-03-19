@@ -99,7 +99,7 @@ q-page(padding)
         div(style="height:30px;")
         .centered(style=" bottom:-25px;").absolute-bottom
           //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
-          q-btn(rounded size="lg" :label="`Send NFT`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
+          q-btn(rounded size="lg" :label="`Send NFT to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
     .col-auto
       .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:800px; max-width:80vw;")
         .centered
@@ -131,7 +131,7 @@ import { defineComponent } from "vue"
 import { printAsset, sleep, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
 import { useNftStore } from "src/stores/nftStore"
-import { fromNativeNft, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
+import { fromNativeNft, loadIbcNfts, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
 
 // type TknStoreType = InstanceType<typeof TknStore>
 // let ok:TknStoreType = {}
@@ -145,7 +145,6 @@ const chainButtons = chainNames.map(name => {
 type modalProps = InstanceType<typeof ConfirmTransferModal>["$props"]
 
 export default defineComponent({
-  name: "IndexPage",
   components: { AuthCard },
   data() {
     return {
@@ -406,7 +405,8 @@ export default defineComponent({
       // else void this.tknStore.loadIbcBal(...params)
     },
     async loadNftWl() {
-      const native = await fromNativeNft(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+      await loadIbcNfts(this.ibcStore.tknBridge.fromChain)
+      const native = fromNativeNft(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
       if (native) await loadNftWl(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
       else await loadNftMetaMap(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
     }

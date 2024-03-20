@@ -51,7 +51,7 @@ export class LinkManager {
       this.session = session
       this.setApi(this.session.client)
       await this.try_restore_session()
-      console.log(session.auth)
+      // console.log(session.auth)
     }
   }
 
@@ -101,9 +101,9 @@ export class LinkManager {
     try {
       const session = await this.link.restoreSession(this.appName)
       if (session) {
-        console.log(
-          `${session.chainId} session reestablished for ${session.auth}`
-        )
+        // console.log(
+        //   `${session.chainId} session reestablished for ${session.auth}`
+        // )
         this.session = session
         this.setApi(this.session.client)
         this.store().setUser(session)

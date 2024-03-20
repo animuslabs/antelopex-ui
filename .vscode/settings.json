@@ -25,5 +25,8 @@
   "vue.features.codeActions.enable": true,
   "[xml]": {
     "editor.defaultFormatter": "DotJoshJohnson.xml"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   }
 }

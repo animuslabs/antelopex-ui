@@ -455,13 +455,12 @@
     vscode-languageserver-protocol "^3.17.3"
     vscode-languageserver-textdocument "^1.0.8"
 
-"@volar-plugins/pug-beautify@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@volar-plugins/pug-beautify/-/pug-beautify-1.1.0.tgz#7ca59b518737fba622eb489e65ae2543159dd9d4"
-  integrity sha512-BEEd7/am68I9oEOczHOm3saBDN/EUiXT49i3ZUTJWpVLpMS2z5xAvDoPzE8Jg3e/ciFoanc3bUd3Ljz8RLYyKA==
+"@volar-plugins/pug-beautify@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@volar-plugins/pug-beautify/-/pug-beautify-2.0.0.tgz#37d1b8be63bdaf4e076d72b5df73e5c30a33fa80"
+  integrity sha512-25r8HwObez/LoNrb0+kbyKDbhlEJe/WgjYeYMJ/OlKu+60BvSWyDTDtGmkV9DHh921zeAHcFTkHebf7oX1KbmA==
   dependencies:
     "@johnsoncodehk/pug-beautify" "^0.2.2"
-    vscode-languageserver-types "^3.17.2"
 
 "@volar-plugins/pug@2.0.0-alpha.13":
   version "2.0.0-alpha.13"
@@ -670,6 +669,13 @@
   dependencies:
     "@vue/shared" "3.2.47"
 
+"@vue/reactivity@3.4.21":
+  version "3.4.21"
+  resolved "https://registry.yarnpkg.com/@vue/reactivity/-/reactivity-3.4.21.tgz#affd3415115b8ebf4927c8d2a0d6a24bccfa9f02"
+  integrity sha512-UhenImdc0L0/4ahGCyEzc/pZNwVgcglGy9HVzJ1Bq2Mm9qXOpP8RyNTjookw/gOCUlXSEtuZ2fUg5nrHcoqJcw==
+  dependencies:
+    "@vue/shared" "3.4.21"
+
 "@vue/runtime-core@3.2.47":
   version "3.2.47"
   resolved "https://registry.yarnpkg.com/@vue/runtime-core/-/runtime-core-3.2.47.tgz#406ebade3d5551c00fc6409bbc1eeb10f32e121d"
@@ -677,6 +683,14 @@
   dependencies:
     "@vue/reactivity" "3.2.47"
     "@vue/shared" "3.2.47"
+
+"@vue/runtime-core@3.4.21":
+  version "3.4.21"
+  resolved "https://registry.yarnpkg.com/@vue/runtime-core/-/runtime-core-3.4.21.tgz#3749c3f024a64c4c27ecd75aea4ca35634db0062"
+  integrity sha512-pQthsuYzE1XcGZznTKn73G0s14eCJcjaLvp3/DKeYWoFacD9glJoqlNBxt3W2c5S40t6CCcpPf+jG01N3ULyrA==
+  dependencies:
+    "@vue/reactivity" "3.4.21"
+    "@vue/shared" "3.4.21"
 
 "@vue/runtime-dom@3.2.47":
   version "3.2.47"
@@ -686,6 +700,15 @@
     "@vue/runtime-core" "3.2.47"
     "@vue/shared" "3.2.47"
     csstype "^2.6.8"
+
+"@vue/runtime-dom@^3.4.21":
+  version "3.4.21"
+  resolved "https://registry.yarnpkg.com/@vue/runtime-dom/-/runtime-dom-3.4.21.tgz#91f867ef64eff232cac45095ab28ebc93ac74588"
+  integrity sha512-gvf+C9cFpevsQxbkRBS1NpU8CqxKw0ebqMvLwcGQrNpx6gqRDodqKqA+A2VZZpQ9RpK2f9yfg8VbW/EpdFUOJw==
+  dependencies:
+    "@vue/runtime-core" "3.4.21"
+    "@vue/shared" "3.4.21"
+    csstype "^3.1.3"
 
 "@vue/server-renderer@3.2.47":
   version "3.2.47"
@@ -699,6 +722,11 @@
   version "3.2.47"
   resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.2.47.tgz#e597ef75086c6e896ff5478a6bfc0a7aa4bbd14c"
   integrity sha512-BHGyyGN3Q97EZx0taMQ+OLNuZcW3d37ZEVmEAyeoA9ERdGvm9Irc/0Fua8SNyOtV1w6BS4q25wbMzJujO9HIfQ==
+
+"@vue/shared@3.4.21":
+  version "3.4.21"
+  resolved "https://registry.yarnpkg.com/@vue/shared/-/shared-3.4.21.tgz#de526a9059d0a599f0b429af7037cd0c3ed7d5a1"
+  integrity sha512-PuJe7vDIi6VYSinuEbUIQgMIRZGgM8e4R+G+/dQTk0X1NEdvgvvgv7m+rfmDH1gZzyA1OjjoWskvHlfRNfQf3g==
 
 "@wharfkit/abicache@^1.2.0":
   version "1.2.2"
@@ -1379,6 +1407,11 @@ csstype@^2.6.8:
   version "2.6.21"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.21.tgz#2efb85b7cc55c80017c66a5ad7cbd931fda3a90e"
   integrity sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==
+
+csstype@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
+  integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
 data-uri-to-buffer@^4.0.0:
   version "4.0.1"
@@ -3487,6 +3520,11 @@ pug-attrs@^3.0.0:
     constantinople "^4.0.1"
     js-stringify "^1.0.2"
     pug-runtime "^3.0.0"
+
+pug-beautify@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/pug-beautify/-/pug-beautify-0.1.1.tgz#df7fbc70ee80c18a6422dffab2fe508188cdcc18"
+  integrity sha512-fadMtPHaRr6Ep6SDjPeCrsq5/Ody7N0kGNVemeoD3NeP6PeAaSyN4LMtIad0Tjzvn2b6913OqO7KCPxi65tA3A==
 
 pug-code-gen@^3.0.2:
   version "3.0.2"

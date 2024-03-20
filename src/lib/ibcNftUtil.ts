@@ -1,11 +1,12 @@
 
-import { APIClient, Name } from "@wharfkit/antelope"
+import { APIClient, Name, NameType, UInt32Type, UInt64 } from "@wharfkit/antelope"
+
 import { ChainKey, configs } from "lib/config"
 import { IbcNft } from "lib/types/antelopesys.types"
 import { Contract as AtomicContract, Types as AtomicTypes } from "lib/types/atomicassets.types"
 import { Contract as NftLock, Types as NftLockTypes } from "lib/types/wraplock.nft.types"
 import { Contract as NftWrap, Types as NftWrapTypes } from "lib/types/wraptoken.nft.types"
-import { throwErr } from "lib/utils"
+import { throwErr, toObject } from "lib/utils"
 import { chainLinks } from "src/boot/boot"
 import { markRaw, reactive } from "vue"
 
@@ -77,7 +78,36 @@ async function findNftWrapContract(fromChainKey:ChainKey, toChainKey:ChainKey) {
 
 export function fromNativeNft(fromChainKey:ChainKey, toChainKey:ChainKey) {
   // await loadIbcNfts(fromChainKey)
-  if (!ibcNftCache[fromChainKey]) throwErr(`No ibcNftCache loaded for ${fromChainKey}`)
+  if (!ibcNftCache[fromChainKey]) {
+    console.error(`No ibcNftCache loaded for ${fromChainKey}`)
+    return false
+  }
   const native = ibcNftCache[fromChainKey].find(nft => nft.paired_chain.toString() === toChainKey && nft.native)
   return !!native
+}
+
+export async function foreignSchemaDefined(fromChainKey:ChainKey, toChainKey:ChainKey, collectionName:NameType, schemaName:NameType) {
+  const fromNative = fromNativeNft(fromChainKey, toChainKey)
+  if (!fromNative) return true
+  await loadNftMetaMap(toChainKey, fromChainKey)
+  const collectionMeta = nftMetaMapCache[toChainKey].find(map => map.foreign_collection_name.toString() === collectionName.toString())
+  if (!collectionMeta) throwErr(`No collection meta found for ${collectionName} on ${toChainKey}`)
+  const contract = new AtomicContract({ client: new APIClient({ url: configs[toChainKey].linkData.nodeUrl }) })
+  const schemaRow = await contract.table("schemas").get(schemaName, { scope: collectionMeta.local_collection_name })
+  if (schemaRow) console.log(toObject(schemaRow))
+  if (schemaRow) return true
+  else return false
+}
+export async function foreignTemplateDefined(fromChainKey:ChainKey, toChainKey:ChainKey, collectionName:NameType, templateId:UInt32Type) {
+  const fromNative = fromNativeNft(fromChainKey, toChainKey)
+  if (!fromNative) return true
+  await loadNftMetaMap(toChainKey, fromChainKey)
+  const collectionMeta = nftMetaMapCache[toChainKey].find(map => map.foreign_collection_name.toString() === collectionName.toString())
+  if (!collectionMeta) throwErr(`No collection meta found for ${collectionName} on ${toChainKey}`)
+  const acct = await findNftWrapContract(toChainKey, fromChainKey)
+  const contract = new NftWrap({ client: new APIClient({ url: configs[toChainKey].linkData.nodeUrl }), account: acct })
+  const templateMapRow = await contract.table("templatemap").get(UInt64.from(templateId), { scope: collectionName })
+  if (templateMapRow) console.log(toObject(templateMapRow))
+  if (templateMapRow) return true
+  else return false
 }

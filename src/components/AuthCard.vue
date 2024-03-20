@@ -55,23 +55,23 @@ export default defineComponent({
       await this.loadSessions()
     },
     async addAccount() {
-      console.log("add account")
+      // console.log("add account")
       await this.chain.login()
       await this.loadSessions()
     },
     async loadSessions() {
-      console.log("load sessions")
+      // console.log("load sessions")
       this.sessions = []
       void this.$nextTick(async() => {
         const sessions = await this.chain.getSessions()
         this.sessions = sessions
-        console.log("force update")
+        // console.log("force update")
       })
     }
   },
   async mounted() {
     await this.loadSessions()
-    console.log("loggedIn", this.userStore.loggedIn)
+    // console.log("loggedIn", this.userStore.loggedIn)
     void this.$props.chain.try_restore_session()
   },
   watch: {
@@ -85,7 +85,7 @@ export default defineComponent({
     },
     "userStore.getLoggedIn": {
       handler: function(val:LoggedInState|false) {
-        console.log("val", val)
+        // console.log("val", val)
         this.selected = null
         if (!val) return
         const chainId = this.chain.link.chains[0]?.chainId
@@ -94,9 +94,9 @@ export default defineComponent({
         if (!loggedInId) return
         if (loggedInId !== chainId.toString()) return this.selected = null
         if (!val.auth) return
-        console.log("WATCHER loggedIn:", val.auth.toString())
+        // console.log("WATCHER loggedIn:", val.auth.toString())
         // val.chainId?.toString() ===
-        console.log(val.auth)
+        // console.log(val.auth)
         this.selected = val.auth.toString()
       },
       deep: true,
@@ -104,7 +104,7 @@ export default defineComponent({
     },
     selected(val:string) {
       if (!val) return
-      console.log("selected:", val)
+      // console.log("selected:", val)
       const chainId = this.chain.link.chains[0]?.chainId
       if (!chainId) return
       void this.chain.restore_session(PermissionLevel.from(val), chainId)

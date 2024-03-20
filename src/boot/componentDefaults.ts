@@ -21,7 +21,6 @@ const setDefault = (component:any, key:string, value:any) => {
 }
 
 export default boot(({ app }) => {
-  console.log("component defaults")
   setDefault(QCard, "square", false)
   setDefault(QCard, "flat", true)
   // setDefault(QCard, "bordered", true)

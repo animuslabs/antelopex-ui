@@ -96,25 +96,40 @@ q-page(padding)
           h5 Relay Fee: {{ printAsset(relayFee) }}
         //- .centered.q-mb-md.text-white.q-mt-lg
         //-   h5 Service is not yet available
+        .centered
+          NftCard(:asset="selectedNft" :chainKey="ibcStore.tknBridge.fromChain" style="width:300px;" v-if="selectedNft" @name="selectedNftName = $event")
+        div(v-if="!foreignSchemaDefined || !foreignTemplateDefined").q-ma-md
+          p Must prove schema and template before NFTs from this template can be sent.
+          p This is a one time process.
+        div(style="height:45px;" v-if="!foreignSchemaDefined || !foreignTemplateDefined")
+        .centered(style=" bottom:45px;" v-if="!foreignSchemaDefined || !foreignTemplateDefined").absolute-bottom.q-gutter-lg
+          q-btn(label="Prove Schema" size="md" :disable="foreignSchemaDefined" @click="proveSchema(slectedNft)")
+            q-tooltip(v-if="foreignSchemaDefined")
+              p Schema already proven
+          q-btn(label="Prove Template" size="md" :disable="foreignTemplateDefined" @click="proveTemplate(selectedNft)")
+            q-tooltip(v-if="foreignTemplateDefined")
+              p Template already proven
         div(style="height:30px;")
         .centered(style=" bottom:-25px;").absolute-bottom
-          //- q-btn(rounded size="lg" :label="`Send ${ibcStore.sendingAsset} to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="true").q-mt-xs.bg-positive.z-top
           q-btn(rounded size="lg" :label="`Send NFT to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
     .col-auto
       .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:800px; max-width:80vw;")
         .centered
-        .centered.q-pt-sm
+        .centered.q-pt-sm.q-pb-md
           .col-auto
-            h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Bridgable NFTs ({{ bridgableNfts.length }})
-        .centered(style="max-height:600px; overflow-y:auto;")
+            h5.text-weight-light.text-white.q-pb-xs.text-capitalize  Bridgeable NFTs ({{ bridgableNfts.length }})
+        .centered.q-gutter-md.q-pa-lg(style="max-height:800px; overflow-y:auto;")
           div(v-for="nft of bridgableNfts" :key="nft.asset_id")
-            div {{ nft }}
+            NftCard(:asset="nft" :chainKey="ibcStore.tknBridge.fromChain" style="width:200px;" :class="{'selected-box':selectedNftId === nft.asset_id.toString()}" @click="selectedNftId = nft.asset_id.toString()").cursor-pointer
+            .centered
+              //- q-btn(label="Selected" color="positive" v-if="selectedNftId === nft.asset_id.toString()" @click="selectedNftId = ''")
+              //- q-btn(label="Select" v-if="selectedNftId != nft.asset_id.toString()" @click="selectedNftId = nft.asset_id.toString()")
 
 </template>
 
 <script lang="ts">
 import { Asset, NameType } from "anchor-link"
-import ConfirmTransferModal from "components/ConfirmTransferModal.vue"
+import ConfirmNftTransferModal from "components/ConfirmNftTransferModal.vue"
 import { ChainKey, chainNames, configs } from "lib/config"
 import { ibcTokens } from "lib/ibcTokens"
 import { LinkManager } from "lib/linkManager"
@@ -131,7 +146,11 @@ import { defineComponent } from "vue"
 import { printAsset, sleep, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
 import { useNftStore } from "src/stores/nftStore"
-import { fromNativeNft, loadIbcNfts, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
+import { foreignSchemaDefined, foreignTemplateDefined, fromNativeNft, loadIbcNfts, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
+import NftCard from "src/components/NftCard.vue"
+import { useRouter } from "vue-router"
+import { Contract as AtomicContract, Types as AtomicTypes } from "lib/types/atomicassets.types"
+
 
 // type TknStoreType = InstanceType<typeof TknStore>
 // let ok:TknStoreType = {}
@@ -142,12 +161,15 @@ const chainButtons = chainNames.map(name => {
     value: name
   }
 })
-type modalProps = InstanceType<typeof ConfirmTransferModal>["$props"]
+type modalProps = InstanceType<typeof ConfirmNftTransferModal>["$props"]
+
 
 export default defineComponent({
-  components: { AuthCard },
+  components: { AuthCard, NftCard },
   data() {
     return {
+      selectedNftId: "",
+      selectedNftName: "",
       printAsset,
       chainString,
       ibcStore: ibcStore(),
@@ -156,11 +178,30 @@ export default defineComponent({
       chainButtons,
       loadingToAccount: false,
       toAccountValid: null as boolean | null,
-      toAccountMessage: ""
-
+      toAccountMessage: "",
+      router: useRouter(),
+      foreignSchemaDefined: true,
+      foreignTemplateDefined: true,
+      pendingTemplateProofs: [] as number[],
+      pendingSchemaProofs: [] as string[]
     }
   },
   computed: {
+    disableSendButton() {
+      return !this.toAccountValid || !this.foreignSchemaDefined || !this.foreignTemplateDefined || !this.selectedNft
+    },
+    fromNative() {
+      return fromNativeNft(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+    },
+    needTemplateProof() {
+      if (!this.fromNative) return false
+      else return true
+    },
+    selectedNft() {
+      const asset = this.nftStore.nftRows[this.user]?.[this.selectedNftId]
+      if (asset) return asset
+      else return null
+    },
     bridgableNfts() {
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return []
@@ -187,7 +228,7 @@ export default defineComponent({
     checkNative():boolean {
       return !!ibcHubs[this.selectedToken]?.nativeToken[this.ibcStore.tknBridge.fromChain]
     },
-    printLoggedIn():string|null {
+    printLoggedIn():string | null {
       let val = this.userStore.getLoggedIn
       let selected = null
       if (!val) return null
@@ -270,6 +311,18 @@ export default defineComponent({
     }
   },
   methods: {
+    async proveSchema(nft:AtomicTypes.assets_s) {
+      alert("prove schema " + nft.schema_name.toString())
+      if (this.pendingSchemaProofs.includes(nft.schema_name.toString())) return
+      this.pendingSchemaProofs.push(nft.schema_name.toString())
+      this.foreignSchemaDefined = true
+    },
+    async proveTemplate(nft:AtomicTypes.assets_s) {
+      alert("prove template " + nft.template_id.toString())
+      if (this.pendingTemplateProofs.includes(nft.template_id.toNumber())) return
+      this.pendingTemplateProofs.push(nft.template_id.toNumber())
+      this.foreignTemplateDefined = true
+    },
     async reverseChains() {
       this.ibcStore.swapChains()
     },
@@ -304,21 +357,21 @@ export default defineComponent({
     async sendToken() {
       console.log("send token")
       const bridge = this.ibcStore.tknBridge
-
+      console.log("bridge", this.selectedNftId)
       const componentProps:modalProps = {
         destinationAccountName: bridge.destinationAccount,
         fromChainName: chainString(bridge.fromChain),
         toChainName: chainString(bridge.toChain),
-        quantity: Asset.from(this.ibcStore.sendingAsset.toString()),
+        nftName: this.selectedNftName,
         relayFee: this.relayFee,
         fromAccountName: this.printLoggedIn?.split("@")[0] || ""
       }
       console.log("props", componentProps)
 
 
-      this.$q.dialog(
+      Dialog.create(
         {
-          component: ConfirmTransferModal,
+          component: ConfirmNftTransferModal,
           componentProps
         }
       ).onOk(async() => {
@@ -380,15 +433,8 @@ export default defineComponent({
             const result = await doActions(actions, this.fromLink)
             if (result) txid = result.transaction.id.toString()
           }
-          // Dialog.create({
-          //   style: "background-color:white;",
-          //   message: "The IBC relay service will take 3 minutes to push your tokens to the destination chain. BOID tokens will need to be unwrapped on the unwrap page when sending to Telos chain.",
-          //   ok() {
-          //     console.log("dialog closed")
-          //   }
-          // })
           await sleep(2000)
-          await this.$router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
+          await this.router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
         } catch (error) {
           console.error(error)
         }
@@ -397,21 +443,31 @@ export default defineComponent({
     async loadAccountNfts() {
       const acct = this.userStore.getLoggedIn
       if (!acct || !acct.account) return
-      console.log("checkNative", this.checkNative)
       await this.nftStore.loadAccountNfts(acct.account)
-      // let tknStore = this.tknStore
-      // const params:Parameters<typeof tknStore.loadNativeBal> = [acct.account, this.ibcStore.tknBridge.fromChain, this.selectedToken] as any
-      // if (this.checkNative) void this.tknStore.loadNativeBal(...params)
-      // else void this.tknStore.loadIbcBal(...params)
     },
     async loadNftWl() {
       await loadIbcNfts(this.ibcStore.tknBridge.fromChain)
       const native = fromNativeNft(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
-      if (native) await loadNftWl(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
-      else await loadNftMetaMap(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+      if (native) {
+        await loadNftWl(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+      } else {
+        await loadNftMetaMap(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+        // this.selected
+      }
     }
   },
   watch: {
+    selectedNftId: {
+      async handler(val) {
+        if (!val || !this.selectedNft) return
+        // console.log("selectedNftId", val)
+        if (!this.pendingSchemaProofs.includes(this.selectedNft.schema_name.toString())) this.foreignSchemaDefined = await foreignSchemaDefined(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain, this.selectedNft.collection_name, this.selectedNft.schema_name)
+        else this.foreignSchemaDefined = true
+        if (!this.pendingTemplateProofs.includes(this.selectedNft.template_id.toNumber())) this.foreignTemplateDefined = await foreignTemplateDefined(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain, this.selectedNft.collection_name, this.selectedNft.template_id)
+        else this.foreignTemplateDefined = true
+      },
+      immediate: true
+    },
     "userStore.getLoggedIn": {
       handler(val) {
         void this.loadAccountNfts()
@@ -439,7 +495,6 @@ export default defineComponent({
     },
     "ibcStore.tknBridge.destinationAccount": {
       async handler(val, oldVal) {
-        console.log("dest account", val)
         if (val === "") return
         this.loadingToAccount = true
         const link = chainLinks[this.ibcStore.tknBridge.toChain]

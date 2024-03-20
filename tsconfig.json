@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "types": [
       "vite/client",
-      "node"
+      "node",
+      "@types/node"
     ],
     "baseUrl": ".",
     "paths": {
@@ -46,7 +47,8 @@
   "vueCompilerOptions": {
     "plugins": [
       "@volar/vue-language-plugin-pug",
-      "@vue/language-plugin-pug"
+      "@vue/language-plugin-pug",
+      "@volar-plugins/pug-beautify"
     ]
   }
 }

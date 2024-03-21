@@ -3,7 +3,7 @@ import { LinkManager } from "lib/linkManager"
 import { Notify } from "quasar"
 import { Transfer } from "./types/token.types"
 import { Retire } from "lib/types/wraptoken.types"
-
+import { Contract as AtomicContract, Types as AtomicTypes } from "lib/types/atomicassets.types"
 
 export function makeSpecialOrderMemo(trxid:string, blockNum:number) {
   return `trxid=${trxid} block_num=${blockNum}`
@@ -20,6 +20,7 @@ export const makeAction = {
     if (!authorization) throw (new Error("auth missing"))
     return Action.from({ name: "retire", account: contract, data: Retire.from(data), authorization: [authorization] })
   }
+
 }
 
 export async function doActions(actions:AnyAction[], link:LinkManager, alert = true) {

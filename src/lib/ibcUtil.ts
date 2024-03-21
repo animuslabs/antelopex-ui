@@ -2,6 +2,9 @@ import { ChainKey } from "lib/config"
 import { ibcSymbols, ibcTokens } from "lib/ibcTokens"
 import { FilteredSymbol, FilteredTokens, IbcToken } from "lib/types/ibc.types"
 
+export const ibcActionNames = ["emitxfer", "emitnftxfer", "nftidxfer", "emitschema", "emittemplate"] as const
+export type IBCActionNames = typeof ibcActionNames[number]
+
 export function getTokenList(originChainName:ChainKey, destinationChainName:ChainKey):FilteredTokens {
   if (originChainName === destinationChainName) return {}
   let tknList:FilteredTokens = {}

@@ -140,6 +140,7 @@ import { userStore } from "src/stores/userStore"
 import { defineComponent } from "vue"
 import { printAsset, sleep, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
+import { useRouter } from "vue-router"
 
 // type TknStoreType = InstanceType<typeof TknStore>
 // let ok:TknStoreType = {}
@@ -165,7 +166,8 @@ export default defineComponent({
       chainButtons,
       loadingToAccount: false,
       toAccountValid: null as boolean | null,
-      toAccountMessage: ""
+      toAccountMessage: "",
+      router: useRouter()
     }
   },
   computed: {
@@ -298,7 +300,7 @@ export default defineComponent({
       console.log("props", componentProps)
 
 
-      this.$q.dialog(
+      Dialog.create(
         {
           component: ConfirmTransferModal,
           componentProps
@@ -308,6 +310,7 @@ export default defineComponent({
           const sym = bridge.selectedToken
           const toChain = bridge.toChain
           const tkn = ibcTokens[sym]
+          if (!tkn) throw new Error("No token found")
           const sendingFromNative = tkn.nativeChain === bridge.fromChain
           const fee = this.ibcStore.sysConfig[bridge.fromChain]?.min_fee
           if (!fee) throw new Error("no fee config for this chain.")
@@ -331,6 +334,7 @@ export default defineComponent({
             }
 
             const token = ibcTokens[this.ibcStore.tknBridge.selectedToken]
+            if (!token) throw new Error("No token found")
             const tokenContract = token.tokenContract[bridge.fromChain]
             if (!tokenContract) throw new Error("No token contract on this chain found")
             const act = makeAction.transfer(transfer, tokenContract, this.fromLink)
@@ -370,7 +374,7 @@ export default defineComponent({
           //   }
           // })
           await sleep(2000)
-          await this.$router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
+          await this.router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
         } catch (error) {
           console.error(error)
         }

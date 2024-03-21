@@ -64,6 +64,7 @@ import ms from "ms"
 import { ibcStore as SetupIBCStore } from "src/stores/ibcStore"
 import { doActions, makeAction, makeSpecialOrderMemo } from "lib/transact"
 import { useRouter } from "vue-router"
+import { IBCActionNames, ibcActionNames } from "lib/ibcUtil"
 const router = useRouter()
 const ibcStore = SetupIBCStore()
 let step1Interval:any = null
@@ -109,13 +110,17 @@ async function validateTxid(retry = true):Promise<void> {
     data.loadTrx = true
     let tx = await getHypClient(data.chainName).getTrx(data.txid)
     if (!tx) return
-    let action = tx.actions.find((a) => a.act.name === "emitxfer")
+    console.log(tx.actions.map(el => el.act.name.toString()))
+    let action = tx.actions.find((a) => {
+      console.log(a.act.name.toString())
+      return ibcActionNames.includes(a.act.name.toString() as unknown as IBCActionNames)
+    })
     console.log("act_digest:", action?.act_digest)
     while (!action?.act_digest) {
       console.log("fetching trx again....")
       tx = await getHypClient(data.chainName).getTrx(data.txid)
       if (!tx) return
-      action = tx.actions.find((a) => a.act.name === "emitxfer")
+      action = tx.actions.find((a) => ibcActionNames.includes(a.act.name.toString() as unknown as IBCActionNames))
       console.log("act_digest:", action?.act_digest)
       // await sleep(1000)
     }

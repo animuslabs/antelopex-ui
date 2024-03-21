@@ -97,10 +97,9 @@ q-page(padding)
         //- .centered.q-mb-md.text-white.q-mt-lg
         //-   h5 Service is not yet available
         .centered
-          NftCard(:asset="selectedNft" :chainKey="ibcStore.tknBridge.fromChain" style="width:300px;" v-if="selectedNft" @name="selectedNftName = $event")
-        div(v-if="!foreignSchemaDefined || !foreignTemplateDefined").q-ma-md
-          p Must prove schema and template before NFTs from this template can be sent.
-          p This is a one time process.
+          NftCard(:asset="selectedNft" :chainKey="ibcStore.tknBridge.fromChain" style="width:250px;" v-if="selectedNft" @name="selectedNftName = $event")
+        div(v-if="!foreignSchemaDefined || !foreignTemplateDefined" style="max-width:350px;").q-ma-md
+          p Must prove schema and template before NFTs from this template can be sent. This is a one time process.
         div(style="height:45px;" v-if="!foreignSchemaDefined || !foreignTemplateDefined")
         .centered(style=" bottom:45px;" v-if="!foreignSchemaDefined || !foreignTemplateDefined").absolute-bottom.q-gutter-lg
           q-btn(label="Prove Schema" size="md" :disable="foreignSchemaDefined" @click="proveSchema(slectedNft)")
@@ -111,7 +110,7 @@ q-page(padding)
               p Template already proven
         div(style="height:30px;")
         .centered(style=" bottom:-25px;").absolute-bottom
-          q-btn(rounded size="lg" :label="`Send NFT to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="toAccountValid != true").q-mt-xs.bg-positive
+          q-btn(rounded size="lg" :label="`Send NFT to ${ibcStore.tknBridge.destinationAccount} on ${chainString(ibcStore.tknBridge.toChain)}`" @click="sendToken" :disable="disableSendButton").q-mt-xs.bg-positive
     .col-auto
       .outline-box.q-pa-md.q-mt-lg.relative-position(style="width:800px; max-width:80vw;")
         .centered
@@ -125,10 +124,11 @@ q-page(padding)
               //- q-btn(label="Selected" color="positive" v-if="selectedNftId === nft.asset_id.toString()" @click="selectedNftId = ''")
               //- q-btn(label="Select" v-if="selectedNftId != nft.asset_id.toString()" @click="selectedNftId = nft.asset_id.toString()")
 
+  .centered.q-mt-xl
 </template>
 
 <script lang="ts">
-import { Asset, NameType } from "anchor-link"
+import { AnyAction, Asset, NameType } from "anchor-link"
 import ConfirmNftTransferModal from "components/ConfirmNftTransferModal.vue"
 import { ChainKey, chainNames, configs } from "lib/config"
 import { ibcTokens } from "lib/ibcTokens"
@@ -146,10 +146,13 @@ import { defineComponent } from "vue"
 import { printAsset, sleep, throwErr } from "lib/utils"
 import { ibcHubs } from "lib/ibcHubs"
 import { useNftStore } from "src/stores/nftStore"
-import { foreignSchemaDefined, foreignTemplateDefined, fromNativeNft, loadIbcNfts, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
+import { findNftLockContract, findNftWrapContract, foreignSchemaDefined, foreignTemplateDefined, fromNativeNft, loadIbcNfts, loadNftMetaMap, loadNftWl, nftMetaMapCache, nftWhitelistCache } from "lib/ibcNftUtil"
 import NftCard from "src/components/NftCard.vue"
 import { useRouter } from "vue-router"
 import { Contract as AtomicContract, Types as AtomicTypes } from "lib/types/atomicassets.types"
+import { APIClient } from "@wharfkit/antelope"
+import { Contract as NftLock, Types as NftLockTypes } from "lib/types/wraplock.nft.types"
+import { Contract as NftWrap, Types as NftWrapTypes } from "lib/types/wraptoken.nft.types"
 
 
 // type TknStoreType = InstanceType<typeof TknStore>
@@ -318,10 +321,25 @@ export default defineComponent({
       this.foreignSchemaDefined = true
     },
     async proveTemplate(nft:AtomicTypes.assets_s) {
-      alert("prove template " + nft.template_id.toString())
       if (this.pendingTemplateProofs.includes(nft.template_id.toNumber())) return
-      this.pendingTemplateProofs.push(nft.template_id.toNumber())
-      this.foreignTemplateDefined = true
+      const config = configs[this.ibcStore.tknBridge.fromChain]
+      const contract = new NftLock({ client: new APIClient({ url: config.linkData.nodeUrl }), account: await findNftLockContract(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain) })
+      const proveTempAct = contract.action("inittemplate", { collection_name: nft.collection_name, template_id: nft.template_id })
+      const fee = this.ibcStore.sysConfig[this.ibcStore.tknBridge.fromChain]?.min_fee
+      if (!fee) throw new Error("no fee config for this chain.")
+      const payFee = Transfer.from({
+        from: this.user,
+        to: this.fromLink.config.sysContract,
+        quantity: this.relayFee,
+        memo: "ibc order payment"
+      })
+      console.log("payFee", JSON.stringify(payFee, null, 2))
+      const feeAct = makeAction.transfer(payFee, fee?.contract, this.fromLink)
+      const result = await doActions([feeAct, proveTempAct as unknown as AnyAction], this.fromLink)
+      if (result?.processed) {
+        this.pendingTemplateProofs.push(nft.template_id.toNumber())
+        this.foreignTemplateDefined = true
+      }
     },
     async reverseChains() {
       this.ibcStore.swapChains()
@@ -378,8 +396,6 @@ export default defineComponent({
         try {
           const sym = bridge.selectedToken
           const toChain = bridge.toChain
-          const tkn = ibcTokens[sym]
-          const sendingFromNative = tkn.nativeChain === bridge.fromChain
           const fee = this.ibcStore.sysConfig[bridge.fromChain]?.min_fee
           if (!fee) throw new Error("no fee config for this chain.")
           const payFee = Transfer.from({
@@ -391,50 +407,22 @@ export default defineComponent({
           console.log("payFee", JSON.stringify(payFee, null, 2))
           const feeAct = makeAction.transfer(payFee, fee.contract, this.fromLink)
           let txid = ""
-          if (sendingFromNative) {
-            const toAcct = tkn.wraplockContracts[toChain]
-            if (!toAcct) throw new Error("No wraplock contract found for this token on this chain")
-            const transfer = {
-              from: this.user,
-              to: toAcct,
-              quantity: this.ibcStore.sendingAsset.toString(),
-              memo: this.ibcStore.tknBridge.destinationAccount
-            }
-
-            const token = ibcTokens[this.ibcStore.tknBridge.selectedToken]
-            const tokenContract = token.tokenContract[bridge.fromChain]
-            if (!tokenContract) throw new Error("No token contract on this chain found")
-            const act = makeAction.transfer(transfer, tokenContract, this.fromLink)
-            const result = await doActions([feeAct, act], this.fromLink)
-            if (result) txid = result.transaction.id.toString()
-          } else {
-            const remoteToken = tkn.tokenContract[bridge.fromChain]
-            if (!remoteToken) throw new Error("No token contract on this chain found")
-            const retireData = {
-              owner: this.user,
-              beneficiary: this.ibcStore.tknBridge.destinationAccount,
-              quantity: this.ibcStore.sendingAsset.toString()
-            }
-            console.log("retireData:", JSON.stringify(retireData, null, 2))
-            const retireAct = makeAction.retire(retireData, remoteToken, this.fromLink)
-            console.log("retireAct:", JSON.stringify(retireAct, null, 2))
-            let actions = [feeAct, retireAct]
-            if (this.checkNative) {
-              const nativetkn = ibcHubs[bridge.selectedToken]
-              if (!nativetkn) throwErr("No token contract on this chain found")
-              const wrapAction = makeAction.transfer({
-                from: this.user,
-                to: nativetkn.hubContract[bridge.fromChain] as string,
-                quantity: this.ibcStore.sendingAsset.toString(),
-                memo: `ibc_contract=${remoteToken}  issue_to=${this.user}`
-              }, nativetkn.nativeToken[bridge.fromChain] as string, this.fromLink)
-              actions.unshift(wrapAction)
-            }
-            const result = await doActions(actions, this.fromLink)
-            if (result) txid = result.transaction.id.toString()
+          const contract = new AtomicContract({ client: new APIClient({ url: configs[this.ibcStore.tknBridge.fromChain].linkData.nodeUrl }) })
+          const to = this.fromNative ? await findNftLockContract(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain) : await findNftWrapContract(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain)
+          const nftTrx = contract.action("transfer", { from: this.user, to, asset_ids: [this.selectedNftId], memo: this.ibcStore.tknBridge.destinationAccount })
+          const result = await doActions([feeAct, nftTrx as unknown as AnyAction], this.fromLink)
+          if (result?.processed) {
+            txid = result.transaction.id.toString()
+            await sleep(2000)
+            // await this.router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
+            void this.loadAccountNfts()
+            this.selectedNftId = ""
+            this.selectedNftName = ""
+            Dialog.create({
+              style: "background-color:white;",
+              message: "The IBC relay service will take 3 minutes to push your NFT to the destination chain."
+            })
           }
-          await sleep(2000)
-          await this.router.push({ name: "status", query: { txid, chain: bridge.fromChain, hideDetails: "true" } })
         } catch (error) {
           console.error(error)
         }

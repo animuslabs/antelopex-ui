@@ -1,7 +1,12 @@
 import { Name, Asset, UInt64, VarUInt, Checksum256, ABIEncoder, Serializer } from "@greymass/eosio"
+import { ABISerializable, Serializer as Serializer2 } from "@wharfkit/antelope"
 import { sha256 } from "hash.js"
 import { HypAction, getHypClient } from "lib/hyp"
+import { Emitxfer } from "lib/types/wraptoken.types"
 import { throwErr } from "lib/utils"
+import { Contract as AtomicContract, Types as AtomicTypes } from "lib/types/atomicassets.types"
+import { Contract as NftLock, Types as NftLockTypes } from "lib/types/wraplock.nft.types"
+import { Contract as NftWrap, Types as NftWrapTypes } from "lib/types/wraptoken.nft.types"
 
 
 export function getReceiptDigest(action:any) {
@@ -15,19 +20,15 @@ export function getReceiptDigest(action:any) {
     receipt.act_digest = action.act_digest
 
     // Typed actions helps avoiding to fetch or store the ABI
-    const actionData = action.act.data.xfer
-    const typedAction = {
-      xfer: {
-        owner: Name.from(actionData.owner),
-        quantity: {
-          quantity: Asset.from(actionData.quantity.quantity),
-          contract: Name.from(actionData.quantity.contract)
-        },
-        beneficiary: Name.from(actionData.beneficiary)
-      }
+    const actionData = action.act.data
+    let typedAction:any
+    if (action.act.name == "emitxfer") {
+      typedAction = Emitxfer.from(actionData)
+      action.act.hex_data = Serializer.encode({ object: typedAction, type: Emitxfer }).hexString
+    } else if (action.act.name == "emitnftxfer") {
+      typedAction = NftLockTypes.emitnftxfer.from(actionData)
+      action.act.hex_data = Serializer2.encode({ object: typedAction, type: NftLockTypes.emitnftxfer }).hexString
     }
-
-    action.act.hex_data = Serializer.encode({ object: typedAction }).hexString
   }
   // console.log()
 

@@ -44,7 +44,7 @@ export async function loadNftWl(fromChainKey:ChainKey, toChainKey:ChainKey) {
   return nftWhitelistCache[fromChainKey]
 }
 
-async function findNftLockContract(fromChainKey:ChainKey, toChainKey:ChainKey) {
+export async function findNftLockContract(fromChainKey:ChainKey, toChainKey:ChainKey) {
   await loadIbcNfts(fromChainKey)
   const targetContract = ibcNftCache[fromChainKey].find(nft => nft.paired_chain.toString() === toChainKey && nft.native)
   if (!targetContract) throwErr(`No wraplock contract found for ${fromChainKey} -> ${toChainKey}`)
@@ -68,7 +68,7 @@ export async function loadNftMetaMap(fromChainKey:ChainKey, toChainKey:ChainKey)
   return nftMetaMapCache[fromChainKey]
 }
 
-async function findNftWrapContract(fromChainKey:ChainKey, toChainKey:ChainKey) {
+export async function findNftWrapContract(fromChainKey:ChainKey, toChainKey:ChainKey) {
   await loadIbcNfts(fromChainKey)
   const targetContract = ibcNftCache[fromChainKey].find(nft => nft.paired_chain.toString() === toChainKey && !nft.native)
   if (!targetContract) throwErr(`No wraptoken contract found for ${fromChainKey} -> ${toChainKey}`)

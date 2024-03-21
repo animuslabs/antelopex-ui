@@ -47,6 +47,9 @@ import { type IBCSymbol, ibcTokens } from "lib/ibcTokens"
 import { type IbcMeta } from "lib/types/ibc.types"
 import StatusProgress from "src/components/StatusProgress.vue"
 import { getReceiptDigest } from "lib/getReceiptDigest"
+import { type IBCActionNames, ibcActionNames } from "lib/ibcUtil"
+import { Action } from "@wharfkit/antelope"
+import { Types } from "lib/types/wraplock.nft.types"
 
 const txid = ref<string | null>(null)
 const chainName = ref<ChainKey>("telos")
@@ -81,15 +84,22 @@ async function validateTxid(retry = true):Promise<void> {
     loadTrx.value = true
     let tx = await getHypClient(chainName.value).getTrx(txid.value)
     if (!tx) return
-    let action = tx.actions.find((a) => a.act.name === "emitxfer")
+    console.log(tx.actions.map(el => el.act.name.toString()))
+    let action = tx.actions.find((a) => {
+      console.log(a.act.name.toString())
+      return ibcActionNames.includes(a.act.name.toString() as unknown as IBCActionNames)
+    })
     console.log("act_digest:", action?.act_digest)
     while (!action?.act_digest) {
       console.log("fetching trx again....")
       tx = await getHypClient(chainName.value).getTrx(txid.value)
       if (!tx) return
-      action = tx.actions.find((a) => a.act.name === "emitxfer")
+      action = tx.actions.find((a) => {
+        console.log(a.act.name.toString())
+        return ibcActionNames.includes(a.act.name.toString() as unknown as IBCActionNames)
+      })
       console.log("act_digest:", action?.act_digest)
-      // await sleep(1000)
+      await sleep(1000)
     }
     trx.value = tx
     txidValid.value = !!trx.value
@@ -118,55 +128,83 @@ let interval:any
 
 const trxMeta = computed<IbcMeta|null>(() => {
   if (!trx.value) return null
-  const action = trx.value.actions.find((a) => a.act.name === "emitxfer")
+  const action = trx.value.actions.find((a) => ibcActionNames.includes(a.act.name.toString() as unknown as IBCActionNames))
   if (!action) return null
   console.log("action data:", JSON.stringify(action))
   let digest = ""
   if (action.act_digest) digest = getReceiptDigest(action)
   console.log("digest:", digest)
-  const data = Emitxfer.from(action.act.data).xfer
-  const contract = action.act.account
-  const sym:string = data.quantity.quantity.symbol.code.toString()
-  const validSym = Object.keys(ibcTokens).includes(sym)
-  if (!validSym) return null
-  const token = ibcTokens[sym as IBCSymbol]
-  const toNative = token.nativeChain != chainName.value
-  let destinationChain:ChainKey
-  if (toNative) {
-    destinationChain = token.nativeChain
+  if (action.act.name === "emitxfer") {
+    const data = Emitxfer.from(action.act.data).xfer
+    const contract = action.act.account
+    const sym:string = data.quantity.quantity.symbol.code.toString()
+    const validSym = Object.keys(ibcTokens).includes(sym)
+    if (!validSym) return null
+    const token = ibcTokens[sym as IBCSymbol]
+    const toNative = token.nativeChain != chainName.value
+    let destinationChain:ChainKey
+    if (toNative) {
+      destinationChain = token.nativeChain
+    } else {
+      const validDestination = Object.entries(token.wraplockContracts).find(([key, val]) => {
+        console.log(val)
+
+        return val === contract
+      })
+      console.log(validDestination)
+
+      if (!validDestination) return null
+      else destinationChain = validDestination[0] as ChainKey
+    }
+    console.log("token", token)
+    console.log("toNative", toNative)
+
+    const destinationContract:string|undefined = toNative ? token.wraplockContracts[chainName.value] : token.tokenContract[destinationChain]
+    if (!destinationContract) return throwErr("destination contract is undefined")
+    console.log("trxmeta here")
+    const returnData:IbcMeta = {
+      data,
+      digest,
+      sym,
+      toNative,
+      token,
+      timestamp: action["@timestamp"],
+      destinationChain,
+      contract,
+      destinationContract,
+      trxBlock: action.block_num,
+      lib: trx.value.lib,
+      actDigest: action.act_digest,
+      globalSequence: action.global_sequence
+    }
+    return returnData
   } else {
-    const validDestination = Object.entries(token.wraplockContracts).find(([key, val]) => {
-      console.log(val)
-
-      return val === contract
-    })
-    console.log(validDestination)
-
-    if (!validDestination) return null
-    else destinationChain = validDestination[0] as ChainKey
+    const name = action.act.name
+    const toNative = name != "emitnftxfer" && name != "emitxfer" && name != "inittemplate" && name != "initschema"
+    // cosnt nftRow
+    const returnData:IbcMeta = {
+      data: Emitxfer.from({
+        xfer: {
+          owner: "",
+          quantity: { quantity: "0.0 BOID", contract: "" },
+          beneficiary: ""
+        }
+      }).xfer,
+      digest,
+      sym: "",
+      toNative,
+      token: ibcTokens.BOID as any,
+      timestamp: action["@timestamp"],
+      destinationChain: chainName.value,
+      contract: "",
+      destinationContract: "",
+      trxBlock: action.block_num,
+      lib: trx.value.lib,
+      actDigest: action.act_digest,
+      globalSequence: action.global_sequence
+    }
+    return returnData
   }
-  console.log("token", token)
-  console.log("toNative", toNative)
-
-  const destinationContract:string|undefined = toNative ? token.wraplockContracts[chainName.value] : token.tokenContract[destinationChain]
-  if (!destinationContract) return throwErr("destination contract is undefined")
-  console.log("trxmeta here")
-  const returnData:IbcMeta = {
-    data,
-    digest,
-    sym,
-    toNative,
-    token,
-    timestamp: action["@timestamp"],
-    destinationChain,
-    contract,
-    destinationContract,
-    trxBlock: action.block_num,
-    lib: trx.value.lib,
-    actDigest: action.act_digest,
-    globalSequence: action.global_sequence
-  }
-  return returnData
 })
 
 

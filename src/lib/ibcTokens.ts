@@ -77,34 +77,17 @@ export const ibcTokens:Record<IbcSymbols, IbcToken> = {
       wax: "bananasonwax"
     }
   }
-  // UX: {
-  //   nativeChain: "ux",
-  //   precision: 4,
-  //   tokenContract: {
-  //     eos: "ibc.wt.ux",
-  //     telos: "ibc.wt.ux",
-  //     wax: "ibc.wt.ux",
-  //     ux: "eosio.token"
-  //   },
-  //   wraplockContracts: {
-  //     telos: "ibc.wl.tlos",
-  //     eos: "ibc.wl.eos",
-  //     wax: "ibc.wl.wax"
-  //   }
-  // },
-  // UTXRAM: {
-  //   nativeChain: "ux",
-  //   precision: 4,
-  //   tokenContract: {
-  //     eos: "ibc.wt.ux",
-  //     telos: "ibc.wt.ux",
-  //     ux: "eosio.token",
-  //     wax: "ibc.wt.ux"
-  //   },
-  //   wraplockContracts: {
-  //     telos: "ibc.wl.tlos",
-  //     eos: "ibc.wl.eos",
-  //     wax: "ibc.wl.wax"
-  //   }
-  // }
 }
+
+// export async function getIBCNft(chain:ChainClient, contract:Name) {
+//   const existing = ibcNfts[chain.name][contract.toString()]
+//   if (existing) return existing
+//   const rows = await chain.getTableRows({ code: chain.config.contracts.system, table: "ibcnfts", upper_bound: contract, lower_bound: contract, limit: 1, type: IbcNft })
+//   const row = rows[0]
+//   if (!row) throwErr(`Can't find row for ${contract.toString()} on ${chain.config.chain}`)
+//   ibcNfts[chain.name][contract.toString()] = row
+//   return row
+// }
+
+
+

@@ -19,6 +19,16 @@ const eosjsTypes = {
 }
 const { name, uint8, uint64, varuint32, checksum256, bytes } = eosjsTypes
 
+// function payFeeAction() {
+//   const payFee = Transfer.from({
+//     from: this.user,
+//     to: this.fromLink.config.sysContract,
+//     quantity: fee.quantity,
+//     memo: "ibc order payment"
+//   })
+//   console.log("payFee", JSON.stringify(payFee, null, 2))
+//   const feeAct = makeAction.transfer(payFee, fee.contract, this.fromLink)
+// }
 const nameToUint64 = (s:string | any[]) => {
   let n = 0n
   let i = 0

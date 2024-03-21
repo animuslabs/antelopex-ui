@@ -315,10 +315,29 @@ export default defineComponent({
   },
   methods: {
     async proveSchema(nft:AtomicTypes.assets_s) {
-      alert("prove schema " + nft.schema_name.toString())
+    //   alert("prove schema " + nft.schema_name.toString())
+    //   if (this.pendingSchemaProofs.includes(nft.schema_name.toString())) return
+    //   this.pendingSchemaProofs.push(nft.schema_name.toString())
+    //   this.foreignSchemaDefined = true
       if (this.pendingSchemaProofs.includes(nft.schema_name.toString())) return
-      this.pendingSchemaProofs.push(nft.schema_name.toString())
-      this.foreignSchemaDefined = true
+      const config = configs[this.ibcStore.tknBridge.fromChain]
+      const contract = new NftLock({ client: new APIClient({ url: config.linkData.nodeUrl }), account: await findNftLockContract(this.ibcStore.tknBridge.fromChain, this.ibcStore.tknBridge.toChain) })
+      const proveSchemaAct = contract.action("initschema", { collection_name: nft.collection_name, schema_name: nft.schema_name })
+      const fee = this.ibcStore.sysConfig[this.ibcStore.tknBridge.fromChain]?.min_fee
+      if (!fee) throw new Error("no fee config for this chain.")
+      const payFee = Transfer.from({
+        from: this.user,
+        to: this.fromLink.config.sysContract,
+        quantity: this.relayFee,
+        memo: "ibc order payment"
+      })
+      console.log("payFee", JSON.stringify(payFee, null, 2))
+      const feeAct = makeAction.transfer(payFee, fee?.contract, this.fromLink)
+      const result = await doActions([feeAct, proveSchemaAct as unknown as AnyAction], this.fromLink)
+      if (result?.processed) {
+        this.pendingSchemaProofs.push(nft.schema_name.toString())
+        this.foreignSchemaDefined = true
+      }
     },
     async proveTemplate(nft:AtomicTypes.assets_s) {
       if (this.pendingTemplateProofs.includes(nft.template_id.toNumber())) return

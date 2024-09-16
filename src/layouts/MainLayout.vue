@@ -23,6 +23,15 @@ q-layout
           q-route-tab(to="/unwrap" exact label="unwrap").col-auto
           q-route-tab(to="status" label="status" ).col-auto
           q-route-tab(to="retry" label="retry" ).col-auto
+    // Dense dismissible banner
+    q-banner(v-if="showBanner" rounded class="q-mb-md bg-secondary text-white")
+      template(v-slot:avatar)
+        q-icon(name="warning" color="white")
+      .q-mr-auto.text-bold
+        p EOS network upgrade is scheduled for September 25th. IBC protocol may be temporarily unavailable for asset bridging.
+        p Rest assured, your assets remain secure and can be moved once the IBC contracts are updated.
+      template(v-slot:action)
+        q-btn(label="DISMISS" flat color="white" class="q-ml-md" @click="dismissBanner").q-mt-sm
   q-page-container
     router-view.q-mt-lg
   .col.bg-yellow.q-pa-md.z-top
@@ -41,11 +50,13 @@ import { defineComponent } from "vue"
 export default defineComponent({
   data() {
     return {
-
+      showBanner: true
     }
   },
   methods: {
-
+    dismissBanner() {
+      this.showBanner = false
+    }
   }
 })
 </script>

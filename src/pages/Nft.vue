@@ -102,10 +102,10 @@ q-page(padding)
           p Must prove schema and template before NFTs from this template can be sent. This is a one time process.
         div(style="height:45px;" v-if="!foreignSchemaDefined || !foreignTemplateDefined")
         .centered(style=" bottom:45px;" v-if="!foreignSchemaDefined || !foreignTemplateDefined").absolute-bottom.q-gutter-lg
-          q-btn(label="Prove Schema" size="md" :disable="foreignSchemaDefined"  @click="selectedNft?proveSchema(selectedNft)")
+          q-btn(label="Prove Schema" size="md" :disable="foreignSchemaDefined"  @click="selectedNft?proveSchema(selectedNft) : null")
             q-tooltip(v-if="foreignSchemaDefined")
               p Schema already proven
-          q-btn(label="Prove Template" size="md" :disable="foreignTemplateDefined" @click="selectedNft?proveTemplate(selectedNft)")
+          q-btn( label="Prove Template" size="md" :disable="foreignTemplateDefined" @click="selectedNft?proveTemplate(selectedNft) : null" )
             q-tooltip(v-if="foreignTemplateDefined")
               p Template already proven
         div(style="height:30px;")

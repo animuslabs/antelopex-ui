@@ -4,24 +4,17 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     extraFileExtensions: [".vue", ".json", ".ts", ".js"],
     warnOnUnsupportedTypeScriptVersion: false,
-    project: "./tsconfig.json"
+    project: "./tsconfig.json",
   },
   env: {
     browser: true,
     es2020: true,
     node: true,
-    "vue/setup-compiler-macros": true
+    "vue/setup-compiler-macros": true,
   },
-  extends: [
-    "plugin:@typescript-eslint/recommended",
-    "plugin:vue/vue3-strongly-recommended",
-    "standard"
-  ],
+  extends: ["plugin:@typescript-eslint/recommended", "plugin:vue/vue3-strongly-recommended", "standard"],
 
-  plugins: [
-    "@typescript-eslint",
-    "vue"
-  ],
+  plugins: ["@typescript-eslint", "vue"],
 
   globals: {
     ga: "readonly", // Google Analytics
@@ -33,7 +26,7 @@ module.exports = {
     __QUASAR_SSR_PWA__: "readonly",
     process: "readonly",
     Capacitor: "readonly",
-    chrome: "readonly"
+    chrome: "readonly",
   },
 
   // add your custom rules here
@@ -58,47 +51,38 @@ module.exports = {
     "prefer-promise-reject-errors": "off",
     "no-unused-vars": "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "error" : "off",
-    "space-in-parens": [
-      "error",
-      "never"
-    ],
+    "space-in-parens": ["error", "never"],
     "no-return-assign": "off",
     eqeqeq: "off",
     "no-empty": "off",
     "no-useless-return": "off",
     "no-unreachable": "off",
     "prefer-const": "off",
-    "space-before-function-paren": [
-      "error",
-      "never"
-    ],
+    "space-before-function-paren": "off",
     camelcase: "off",
     "no-undef": "off",
-    quotes: [
-      "error",
-      "double"
-    ],
+    quotes: ["error", "double"],
     "spaced-comment": "off",
     "key-spacing": [
       "error",
       {
-        afterColon: true
-      }
+        afterColon: true,
+      },
     ],
     // TYPESCRIPT
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-var-requires": "off",
     "@typescript-eslint/no-empty-function": "warn",
-    "@typescript-eslint/type-annotation-spacing": ["error", {
-      after: false
-    }],
+    "@typescript-eslint/type-annotation-spacing": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/ban-types":"off",
-    "@typescript-eslint/no-namespace":"off",
-    "@typescript-eslint/no-empty-interface":"off",
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     // VUE
-    "vue/multi-word-component-names": "off"
-  }
+    "vue/multi-word-component-names": "off",
+    "comma-dangle": "off",
+  },
 }

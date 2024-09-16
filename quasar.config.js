@@ -1,28 +1,19 @@
 const { configure } = require("quasar/wrappers")
 
-module.exports = configure(function(/* ctx */) {
+module.exports = configure(function (/* ctx */) {
   return {
     eslint: {
       fix: true,
       warnings: false,
-      errors: true
+      errors: true,
     },
-    boot: [
-      "componentDefaults",
-      "boot"
-    ],
-    css: [
-      "app.sass"
-    ],
-    extras: [
-      "roboto-font",
-      "material-icons",
-      "fontawesome-v6"
-    ],
+    boot: ["componentDefaults", "boot"],
+    css: ["app.sass"],
+    extras: ["roboto-font", "material-icons", "fontawesome-v6"],
     build: {
       target: {
         browser: ["es2020", "edge88", "firefox78", "chrome87", "safari13.1"],
-        node: "node18"
+        node: "node20",
       },
       extendViteConf(viteConf, { isClient, isServer }) {
         viteConf.plugins.push(
@@ -31,36 +22,31 @@ module.exports = configure(function(/* ctx */) {
         )
       },
       vueRouterMode: "history",
-      minify: true
+      minify: true,
     },
     devServer: {
-      open: false
+      open: false,
     },
     framework: {
       config: {
-        ripple: false
-
+        ripple: false,
       },
-      plugins: [
-        "Notify",
-        "Dialog",
-        "LoadingBar"
-      ]
+      plugins: ["Notify", "Dialog", "LoadingBar"],
     },
     animations: [],
     ssr: {
       pwa: false,
       prodPort: 3000,
       middlewares: [
-        "render" // keep this as last one
-      ]
+        "render", // keep this as last one
+      ],
     },
     pwa: {
       workboxMode: "generateSW", // or 'injectManifest'
       injectPwaMetaTags: true,
       swFilename: "sw.js",
       manifestFilename: "manifest.json",
-      useCredentialsForManifestTag: false
-    }
+      useCredentialsForManifestTag: false,
+    },
   }
 })

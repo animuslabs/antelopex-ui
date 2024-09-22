@@ -64,10 +64,10 @@ import ms from "ms"
 import { ibcStore as SetupIBCStore } from "src/stores/ibcStore"
 import { doActions, makeAction, makeSpecialOrderMemo } from "lib/transact"
 import { useRouter } from "vue-router"
-import { IBCActionNames, ibcActionNames } from "lib/ibcUtil"
+import { type IBCActionNames, ibcActionNames } from "lib/ibcUtil"
 const router = useRouter()
 const ibcStore = SetupIBCStore()
-let step1Interval:any = null
+let step1Interval: any = null
 
 const data = reactive({
   chainName: "telos" as ChainKey,
@@ -76,7 +76,7 @@ const data = reactive({
   txidValid: null as boolean | null,
   trx: null as GetTransaction<unknown> | null,
   step: 1 as number,
-  relayed: null as boolean | null
+  relayed: null as boolean | null,
 })
 
 async function sendSpecialOrder() {
@@ -85,12 +85,15 @@ async function sendSpecialOrder() {
   const contract = ibcStore.sysConfig[data.chainName]?.min_fee.contract
   if (!contract) return
   const memo = makeSpecialOrderMemo(data.txid, computed.trxMeta.trxBlock)
-  const act = makeAction.transfer({
-    from: computed.originChainLink.loggedInAccount()?.actor || "",
-    to: configs[data.chainName].sysContract,
-    quantity: relayFee.value,
-    memo
-  }, contract, computed.originChainLink
+  const act = makeAction.transfer(
+    {
+      from: computed.originChainLink.loggedInAccount()?.actor || "",
+      to: configs[data.chainName].sysContract,
+      quantity: relayFee.value,
+      memo,
+    },
+    contract,
+    computed.originChainLink
   )
   const result = await doActions([act], computed.originChainLink)
   if (result?.processed) {
@@ -99,7 +102,7 @@ async function sendSpecialOrder() {
   }
 }
 
-async function validateTxid(retry = true):Promise<void> {
+async function validateTxid(retry = true): Promise<void> {
   try {
     data.loadTrx = false
     console.log(data.txid)
@@ -110,7 +113,7 @@ async function validateTxid(retry = true):Promise<void> {
     data.loadTrx = true
     let tx = await getHypClient(data.chainName).getTrx(data.txid)
     if (!tx) return
-    console.log(tx.actions.map(el => el.act.name.toString()))
+    console.log(tx.actions.map((el) => el.act.name.toString()))
     let action = tx.actions.find((a) => {
       console.log(a.act.name.toString())
       return ibcActionNames.includes(a.act.name.toString() as unknown as IBCActionNames)
@@ -148,7 +151,7 @@ const computed = reactive({
   relayBtnLabel: compute(() => `Pay ${printAsset(relayFee.value)} to retry transfer.`),
 
   originChainLink: compute<LinkManager>(() => chainLinks[data.chainName]),
-  trxMeta: compute<IbcMeta|null>(() => {
+  trxMeta: compute<IbcMeta | null>(() => {
     if (!data.trx) return null
     const action = data.trx.actions.find((a) => a.act.name === "emitxfer")
     if (!action) return null
@@ -158,12 +161,12 @@ const computed = reactive({
     console.log("digest:", digest)
     const xferData = Emitxfer.from(action.act.data).xfer
     const contract = action.act.account
-    const sym:string = xferData.quantity.quantity.symbol.code.toString()
+    const sym: string = xferData.quantity.quantity.symbol.code.toString()
     const validSym = Object.keys(ibcTokens).includes(sym)
     if (!validSym) return null
     const token = ibcTokens[sym as IBCSymbol]
     const toNative = token.nativeChain != data.chainName
-    let destinationChain:ChainKey
+    let destinationChain: ChainKey
     if (toNative) {
       destinationChain = token.nativeChain
     } else {
@@ -180,10 +183,10 @@ const computed = reactive({
     console.log("token", token)
     console.log("toNative", toNative)
 
-    const destinationContract:string|undefined = toNative ? token.wraplockContracts[data.chainName] : token.tokenContract[destinationChain]
+    const destinationContract: string | undefined = toNative ? token.wraplockContracts[data.chainName] : token.tokenContract[destinationChain]
     if (!destinationContract) return throwErr("destination contract is undefined")
     console.log("trxmeta here")
-    const returnData:IbcMeta = {
+    const returnData: IbcMeta = {
       data: xferData,
       digest,
       sym,
@@ -196,18 +199,19 @@ const computed = reactive({
       trxBlock: action.block_num,
       lib: data.trx.lib,
       actDigest: action.act_digest,
-      globalSequence: action.global_sequence
+      globalSequence: action.global_sequence,
     }
     return returnData
-  })
+  }),
 })
 
-
-watch(() => computed.trxMeta, (meta) => {
-  if (!meta) return
-  startStep1()
-})
-
+watch(
+  () => computed.trxMeta,
+  (meta) => {
+    if (!meta) return
+    startStep1()
+  }
+)
 
 function startStep1() {
   data.loadTrx = true
@@ -215,10 +219,11 @@ function startStep1() {
   if (step1Interval) clearInterval(step1Interval)
   data.relayed = null
   data.step = 1
-  step1Interval = setInterval(async() => {
+  step1Interval = setInterval(async () => {
     if (!computed.trxMeta) return
     if (data.step != 1) return clearInterval(step1Interval)
-    const info = await destinationChainLink.value.rpc.get_info()
+    // const info = await destinationChainLink.value.rpc.get_info()
+    const info = await computed.originChainLink.rpc.get_info()
     const trxLib = computed.trxMeta.trxBlock + 360
     const lib = info.last_irreversible_block_num.toNumber()
     if (computed.trxMeta.trxBlock < lib) {
@@ -239,7 +244,7 @@ async function startStep2() {
     table: "processed",
     scope: computed.trxMeta.destinationContract,
     reverse: true,
-    limit: 1000
+    limit: 1000,
   }
   let found = false
 
@@ -248,20 +253,20 @@ async function startStep2() {
   if (found) return
   const digests = await chainLinks[computed.trxMeta.destinationChain].rpc.get_table_rows(params)
   console.log("digests:", digests.rows.length)
-  let digestList = digests.rows.map(r => r.receipt_digest)
+  let digestList = digests.rows.map((r) => r.receipt_digest)
   found = digestList.includes(computed.trxMeta.digest)
   console.log("found", found)
   data.relayed = found
   data.loadTrx = false
 }
 
-
-
-watch(() => data.txid, debounce(() => validateTxid(true), 500))
-watch(() => data.chainName, () => ibcStore.loadSysConfig(data.chainName), { immediate: true })
-
-
-
-
-
+watch(
+  () => data.txid,
+  debounce(() => validateTxid(true), 500)
+)
+watch(
+  () => data.chainName,
+  () => ibcStore.loadSysConfig(data.chainName),
+  { immediate: true }
+)
 </script>
